@@ -1,0 +1,72 @@
+ember.png
+size: 2048, 2048
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+tail
+bounds: 4, 4, 422, 473
+head-back
+bounds: 430, 4, 541, 411
+head
+bounds: 975, 4, 541, 395
+slash
+bounds: 1520, 4, 388, 389
+body
+bounds: 4, 481, 274, 332
+body-back
+bounds: 282, 481, 278, 331
+sword
+bounds: 564, 481, 244, 319
+ear-near
+bounds: 812, 481, 185, 247
+ear-near-back
+bounds: 1001, 481, 185, 247
+ear-far-back
+bounds: 1190, 481, 156, 243
+ear-far
+bounds: 1350, 481, 156, 242
+leg-far
+bounds: 1510, 481, 112, 235
+leg-near
+bounds: 1626, 481, 112, 235
+arm-near
+bounds: 1742, 481, 129, 193
+arm-far
+bounds: 1875, 481, 118, 188
+scarf-tail-back
+bounds: 4, 817, 135, 183
+scarf-tail
+bounds: 143, 817, 294, 148
+scarf-wrap
+bounds: 441, 817, 277, 93
+scarf-wrap-back
+bounds: 722, 817, 283, 92
+mouth-open
+bounds: 1009, 817, 75, 86
+brooch
+bounds: 1088, 817, 62, 81
+eyes-alert
+bounds: 1154, 817, 178, 66
+mouth-o
+bounds: 1336, 817, 54, 65
+eyes-open
+bounds: 1394, 817, 169, 54
+eyes-focus
+bounds: 1567, 817, 168, 54
+mouth-smile
+bounds: 1739, 817, 74, 52
+mouth-flat
+bounds: 1817, 817, 62, 46
+eyes-happy
+bounds: 4, 1004, 186, 40
+brows-determined
+bounds: 194, 1004, 198, 32
+eyes-sleep
+bounds: 396, 1004, 186, 28
+brows-worried
+bounds: 586, 1004, 192, 24
+brows-calm
+bounds: 782, 1004, 190, 22
+eyes-blink
+bounds: 976, 1004, 182, 14

@@ -1,0 +1,94 @@
+CCEffect %{
+  techniques:
+  - name: cutout
+    passes:
+    - vert: ink-vs:vert
+      frag: ink-fs:frag
+      rasterizerState: { cullMode: none }
+      depthStencilState: { depthTest: true, depthWrite: true }
+      properties: &props
+        mainTexture: { value: white }
+        tint: { value: [1, 1, 1, 1] }
+        ambientColor: { value: [1, 1, 1, 1] }
+        fireColor: { value: [0.7, 0.3, 0.06, 0.7] }
+        firePosition: { value: [-1.6, 0.2, -0.2, 2.5] }
+        motion: { value: [0, 0, 0, 0] }
+        shape: { value: [1, 0.035, 0, 0] }
+  - name: shadow
+    passes:
+    - vert: ink-vs:vert
+      frag: ink-fs:frag
+      rasterizerState: { cullMode: none }
+      depthStencilState: { depthTest: true, depthWrite: false }
+      blendState:
+        targets:
+        - blend: true
+          blendSrc: src_alpha
+          blendDst: one_minus_src_alpha
+          blendSrcAlpha: one
+          blendDstAlpha: one_minus_src_alpha
+      properties: *props
+}%
+CCProgram ink-vs %{
+  precision highp float;
+  #include <legacy/input>
+  #include <builtin/uniforms/cc-global>
+  #include <legacy/local-batch>
+  #include <legacy/decode-base>
+  uniform InkUniforms {
+    vec4 tint;
+    vec4 ambientColor;
+    vec4 fireColor;
+    vec4 firePosition;
+    vec4 motion;
+    vec4 shape;
+  };
+  out vec2 v_uv;
+  out vec3 v_world;
+  vec4 vert () {
+    vec4 p;
+    CCVertInput(p);
+    float top = clamp(p.y / max(shape.x, 0.001) + 0.5, 0.0, 1.0);
+    float breeze = sin(motion.x * 1.7 + motion.z) * motion.y;
+    p.x += (breeze + motion.w) * top * top;
+    p.y -= abs(motion.w) * top * 0.12;
+    mat4 world;
+    CCGetWorldMatrix(world);
+    vec4 wp = world * p;
+    v_world = wp.xyz;
+    v_uv = a_texCoord;
+    #if SAMPLE_FROM_RT
+      CC_HANDLE_RT_SAMPLE_FLIP(v_uv);
+    #endif
+    return cc_matProj * (cc_matView * wp);
+  }
+}%
+CCProgram ink-fs %{
+  precision highp float;
+  in vec2 v_uv;
+  in vec3 v_world;
+  uniform sampler2D mainTexture;
+  uniform InkUniforms {
+    vec4 tint;
+    vec4 ambientColor;
+    vec4 fireColor;
+    vec4 firePosition;
+    vec4 motion;
+    vec4 shape;
+  };
+  vec4 frag () {
+    vec4 tex = texture(mainTexture, v_uv);
+    if (tex.a < shape.y) discard;
+    if (shape.w > 0.5) return vec4(tint.rgb, tex.a * tint.a);
+    float stipple = fract(dot(floor(gl_FragCoord.xy), vec2(0.75487766, 0.56984029)));
+    if (stipple > tint.a) discard;
+    float d = distance(v_world.xz, firePosition.xz);
+    float flicker = 1.0 + 0.05 * sin(motion.x * 13.0) + 0.026 * sin(motion.x * 21.0);
+    float warmth = exp(-d * d / (firePosition.w * firePosition.w)) * flicker * fireColor.a;
+    vec3 lighting = ambientColor.rgb + fireColor.rgb * warmth;
+    vec3 rgb = tex.rgb * mix(lighting, vec3(1.12, 1.02, 0.9), shape.z) * tint.rgb;
+    float depthHaze = clamp((-v_world.z - 1.0) / 9.0, 0.0, 1.0) * 0.18;
+    rgb = mix(rgb, vec3(0.30, 0.38, 0.30) * ambientColor.rgb, depthHaze);
+    return vec4(rgb, 1.0);
+  }
+}%

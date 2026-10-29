@@ -1,0 +1,24 @@
+deer.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 239, 212
+body
+bounds: 247, 4, 192, 177
+arm-far
+bounds: 4, 220, 82, 145
+tail
+bounds: 90, 220, 115, 141
+leg-far
+bounds: 209, 220, 50, 138
+leg-near
+bounds: 263, 220, 49, 138
+arm-near
+bounds: 316, 220, 86, 136
+ear-near
+bounds: 406, 220, 94, 134
+ear-far
+bounds: 4, 369, 87, 127

@@ -1,0 +1,26 @@
+squirrel.png
+size: 1024, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+tail
+bounds: 4, 4, 207, 259
+head
+bounds: 215, 4, 315, 227
+body
+bounds: 534, 4, 189, 224
+ear-near
+bounds: 727, 4, 97, 129
+leg-near
+bounds: 828, 4, 66, 125
+leg-far
+bounds: 898, 4, 65, 124
+arm-far
+bounds: 4, 267, 92, 122
+arm-near
+bounds: 100, 267, 91, 122
+ear-far
+bounds: 195, 267, 87, 119
+sword
+bounds: 286, 267, 136, 113

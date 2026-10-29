@@ -1,0 +1,26 @@
+ninjacat.png
+size: 1024, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 328, 211
+body
+bounds: 336, 4, 204, 209
+tail
+bounds: 544, 4, 230, 194
+leg-near
+bounds: 778, 4, 66, 128
+leg-far
+bounds: 848, 4, 65, 126
+ear-near
+bounds: 4, 219, 104, 112
+sword
+bounds: 112, 219, 117, 111
+arm-far
+bounds: 233, 219, 83, 109
+arm-near
+bounds: 320, 219, 93, 109
+ear-far
+bounds: 417, 219, 87, 98

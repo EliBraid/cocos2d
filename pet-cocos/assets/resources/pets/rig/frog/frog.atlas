@@ -1,0 +1,20 @@
+frog.png
+size: 1024, 256
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 292, 212
+sword
+bounds: 300, 4, 96, 207
+body
+bounds: 400, 4, 211, 179
+arm-near
+bounds: 615, 4, 93, 164
+arm-far
+bounds: 712, 4, 87, 160
+leg-far
+bounds: 803, 4, 62, 138
+leg-near
+bounds: 869, 4, 60, 138

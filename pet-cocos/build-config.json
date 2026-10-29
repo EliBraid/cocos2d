@@ -1,0 +1,46 @@
+{
+  "platform": "web-mobile",
+  "debug": true,
+  "name": "萌宠守卫战",
+  "outputName": "battle-v01",
+  "buildPath": "project://build",
+  "startScene": "7f0568be-0d6e-45e0-b42d-0b927b474ff5",
+  "scenes": [
+    {
+      "url": "db://assets/scenes/Home.scene",
+      "uuid": "7f0568be-0d6e-45e0-b42d-0b927b474ff5"
+    },
+    {
+      "url": "db://assets/scenes/Battle.scene",
+      "uuid": "3eb66736-6faa-4310-9fe0-6915a8a2b0cf"
+    },
+    {
+      "url": "db://assets/scenes/Forest.scene",
+      "uuid": "0e2bbfa8-cfb4-5ac4-a177-4fe9dad9be98"
+    }
+  ],
+  "includedModules": [
+    "base",
+    "gfx-webgl",
+    "gfx-webgl2",
+    "2d",
+    "ui",
+    "graphics",
+    "mask",
+    "rich-text",
+    "animation",
+    "tween",
+    "3d",
+    "primitive",
+    "spine-4.2",
+    "custom-pipeline"
+  ],
+  "packages": {
+    "web-mobile": {
+      "orientation": "portrait",
+      "embedWebDebugger": false
+    }
+  },
+  "sourceMaps": true,
+  "md5Cache": true
+}

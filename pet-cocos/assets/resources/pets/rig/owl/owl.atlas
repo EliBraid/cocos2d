@@ -1,0 +1,26 @@
+owl.png
+size: 1024, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+tail
+bounds: 4, 4, 230, 208
+sword
+bounds: 238, 4, 71, 207
+body
+bounds: 313, 4, 171, 204
+head
+bounds: 488, 4, 301, 202
+arm-near
+bounds: 793, 4, 95, 145
+arm-far
+bounds: 892, 4, 94, 141
+leg-near
+bounds: 4, 216, 66, 125
+leg-far
+bounds: 74, 216, 65, 124
+ear-near
+bounds: 143, 216, 95, 116
+ear-far
+bounds: 242, 216, 87, 107

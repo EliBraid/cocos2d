@@ -1,0 +1,24 @@
+chick.png
+size: 1024, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 223, 240
+tail
+bounds: 231, 4, 191, 189
+body
+bounds: 426, 4, 209, 188
+arm-far
+bounds: 639, 4, 74, 154
+arm-near
+bounds: 717, 4, 75, 154
+leg-near
+bounds: 796, 4, 66, 119
+leg-far
+bounds: 866, 4, 65, 118
+ear-near
+bounds: 935, 4, 82, 105
+ear-far
+bounds: 4, 248, 69, 104

@@ -1,0 +1,10 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
+import {WALK_CYCLE,footPath,bodyPose,ChibiGait} from '../assets/scripts/ChibiWalk.ts';
+const rig=JSON.parse(fs.readFileSync(new URL('../assets/proto/forest/fox/fox.json',import.meta.url),'utf8'));
+test('stride matches speed x duration so distance-scrubbing never skates',()=>{assert.ok(Math.abs(WALK_CYCLE.speed*WALK_CYCLE.duration-WALK_CYCLE.stride)<1e-9);});
+test('a planted foot moves backward at exactly ground speed',()=>{for(let p=.02;p<WALK_CYCLE.stance-.2;p+=.05){const v=(footPath(p+.001).x-footPath(p).x)/(.001*WALK_CYCLE.duration)*WALK_CYCLE.unit;assert.ok(Math.abs(v+WALK_CYCLE.speed)<1e-6,'phase '+p+' speed '+v);}});
+test('foot path and body channels loop without a pop',()=>{const a=footPath(0),b=footPath(.99999);assert.ok(Math.abs(a.x-b.x)<.01&&Math.abs(a.y-b.y)<.01&&Math.abs(a.roll-b.roll)<.05);const s=bodyPose(0),e=bodyPose(.99999);for(const k of Object.keys(s))assert.ok(Math.abs(s[k]-e[k])<.01,k);});
+test('the body bounces twice per cycle: down after contact, up while passing',()=>{for(const c of [0,.5]){assert.ok(bodyPose(c+.05).hipY<-4);assert.ok(bodyPose(c+.3).hipY>4);}});
+test('the swing foot clearly leaves the ground',()=>{assert.ok(footPath(WALK_CYCLE.stance+(1-WALK_CYCLE.stance)*.45).y>14);});
+test('native clips exist for side, away and toward-camera walking with the same cadence',()=>{for(const n of ['walk','walk-back','walk-front','walk-preview']){const a=rig.animations[n];assert.ok(a,n);assert.ok(Math.abs(a.bones.hips.translate.at(-1).time-WALK_CYCLE.duration)<1e-6,n);assert.deepEqual(a.events.map(e=>e.name),['step-left','step-right']);}});
+test('gait clock advances by walked distance only',()=>{const g=new ChibiGait(-28,55);g.reset(0);g.update({x:0,z:0},{x:.8,z:0},{x:1,z:0},WALK_CYCLE.stride*.25,'side',true);assert.ok(Math.abs(g.clock-.25)<1e-9);g.update({x:0,z:0},{x:0,z:0},{x:1,z:0},WALK_CYCLE.stride*.25,'side',false);assert.ok(Math.abs(g.clock-.25)<1e-9);});

@@ -1,0 +1,66 @@
+fox.png
+size: 2048, 1024
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head-neutral
+bounds: 4, 4, 311, 295
+offsets: 0, 0, 311, 295
+rotate: false
+index: -1
+head-blink
+bounds: 358, 4, 311, 295
+offsets: 0, 0, 311, 295
+rotate: false
+index: -1
+head-happy
+bounds: 712, 4, 311, 295
+offsets: 0, 0, 311, 295
+rotate: false
+index: -1
+head-focused
+bounds: 1066, 4, 311, 295
+offsets: 0, 0, 311, 295
+rotate: false
+index: -1
+torso
+bounds: 4, 307, 295, 280
+offsets: 0, 0, 295, 280
+rotate: false
+index: -1
+arm-left
+bounds: 358, 307, 171, 202
+offsets: 0, 0, 171, 202
+rotate: false
+index: -1
+arm-right
+bounds: 712, 307, 196, 198
+offsets: 0, 0, 196, 198
+rotate: false
+index: -1
+tail
+bounds: 1066, 307, 285, 279
+offsets: 0, 0, 285, 279
+rotate: false
+index: -1
+leg-left
+bounds: 4, 610, 210, 269
+offsets: 0, 0, 210, 269
+rotate: false
+index: -1
+leg-right
+bounds: 358, 610, 200, 261
+offsets: 0, 0, 200, 261
+rotate: false
+index: -1
+weapon
+bounds: 712, 610, 237, 286
+offsets: 0, 0, 237, 286
+rotate: false
+index: -1
+accessory
+bounds: 1066, 610, 346, 177
+offsets: 0, 0, 346, 177
+rotate: false
+index: -1

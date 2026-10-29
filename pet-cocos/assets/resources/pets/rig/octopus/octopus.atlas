@@ -1,0 +1,18 @@
+octopus.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 279, 240
+body
+bounds: 287, 4, 211, 146
+arm-near
+bounds: 4, 248, 110, 142
+leg-far
+bounds: 118, 248, 65, 132
+leg-near
+bounds: 187, 248, 66, 132
+arm-far
+bounds: 257, 248, 99, 120

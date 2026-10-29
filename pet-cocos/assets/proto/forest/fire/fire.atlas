@@ -1,0 +1,16 @@
+fire.png
+size: 2048, 1024
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+flame-a
+bounds: 4, 4, 425, 517
+offsets: 0, 0, 425, 517
+rotate: false
+index: -1
+flame-b
+bounds: 433, 4, 398, 522
+offsets: 0, 0, 398, 522
+rotate: false
+index: -1

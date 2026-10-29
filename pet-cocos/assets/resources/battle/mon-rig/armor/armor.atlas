@@ -1,0 +1,18 @@
+armor.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+body
+bounds: 2, 2, 262, 235
+top
+bounds: 266, 2, 163, 122
+face-angry
+bounds: 2, 239, 118, 68
+face-hurt
+bounds: 122, 239, 108, 66
+foot-left
+bounds: 232, 239, 70, 53
+foot-right
+bounds: 304, 239, 65, 53

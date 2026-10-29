@@ -1,0 +1,26 @@
+panda.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 295, 240
+body
+bounds: 303, 4, 178, 202
+arm-far
+bounds: 4, 248, 97, 125
+arm-near
+bounds: 105, 248, 97, 122
+leg-near
+bounds: 206, 248, 66, 112
+sword
+bounds: 276, 248, 94, 107
+leg-far
+bounds: 374, 248, 65, 105
+ear-near
+bounds: 4, 377, 103, 92
+tail
+bounds: 111, 377, 89, 86
+ear-far
+bounds: 204, 377, 87, 74

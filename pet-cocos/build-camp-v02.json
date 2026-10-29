@@ -1,0 +1,36 @@
+{
+  "platform": "web-mobile",
+  "debug": true,
+  "name": "萌宠守卫战",
+  "outputName": "web-mobile",
+  "buildPath": "project://build",
+  "startScene": "a048f38c-d5a6-42be-8ae7-e8bbbedb376c",
+  "scenes": [
+    {
+      "url": "db://assets/scenes/Camp.scene",
+      "uuid": "a048f38c-d5a6-42be-8ae7-e8bbbedb376c"
+    }
+  ],
+  "includedModules": [
+    "base",
+    "gfx-webgl",
+    "gfx-webgl2",
+    "2d",
+    "ui",
+    "graphics",
+    "rich-text",
+    "animation",
+    "tween",
+    "3d",
+    "primitive",
+    "spine-4.2",
+    "custom-pipeline"
+  ],
+  "packages": {
+    "web-mobile": {
+      "orientation": "portrait",
+      "embedWebDebugger": false
+    }
+  },
+  "sourceMaps": true
+}

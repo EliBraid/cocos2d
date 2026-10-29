@@ -1,0 +1,18 @@
+dasher.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+body
+bounds: 2, 2, 298, 243
+top
+bounds: 302, 2, 200, 122
+face-angry
+bounds: 2, 247, 132, 72
+face-hurt
+bounds: 136, 247, 119, 71
+foot-left
+bounds: 257, 247, 70, 52
+foot-right
+bounds: 329, 247, 70, 52

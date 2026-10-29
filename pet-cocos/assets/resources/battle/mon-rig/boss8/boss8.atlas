@@ -1,0 +1,18 @@
+boss8.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+body
+bounds: 2, 2, 284, 269
+top
+bounds: 288, 2, 189, 122
+face-angry
+bounds: 2, 273, 137, 85
+face-hurt
+bounds: 141, 273, 123, 70
+foot-left
+bounds: 266, 273, 61, 53
+foot-right
+bounds: 329, 273, 61, 53

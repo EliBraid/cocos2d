@@ -1,0 +1,26 @@
+hamster.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 273, 240
+body
+bounds: 281, 4, 211, 157
+sword
+bounds: 4, 248, 88, 127
+arm-near
+bounds: 96, 248, 97, 115
+arm-far
+bounds: 197, 248, 91, 111
+leg-far
+bounds: 292, 248, 65, 109
+leg-near
+bounds: 361, 248, 66, 106
+ear-near
+bounds: 4, 379, 94, 97
+ear-far
+bounds: 102, 379, 87, 91
+tail
+bounds: 193, 379, 82, 82

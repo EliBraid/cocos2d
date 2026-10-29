@@ -1,0 +1,18 @@
+{
+  "bones": 21,
+  "slots": 9,
+  "meshAttachments": 9,
+  "animations": [
+    "idle",
+    "neutral",
+    "blink",
+    "happy",
+    "focused",
+    "auto-blink",
+    "walk",
+    "attack",
+    "hit"
+  ],
+  "weighted": true,
+  "source": "Project-owned generated fox artwork; no Cult of the Lamb assets"
+}

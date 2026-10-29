@@ -1,0 +1,20 @@
+penguin.png
+size: 1024, 256
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 293, 240
+body
+bounds: 301, 4, 211, 179
+arm-near
+bounds: 516, 4, 95, 125
+arm-far
+bounds: 615, 4, 97, 124
+sword
+bounds: 716, 4, 120, 122
+leg-near
+bounds: 840, 4, 66, 97
+leg-far
+bounds: 910, 4, 65, 93

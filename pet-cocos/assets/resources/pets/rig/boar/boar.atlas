@@ -1,0 +1,24 @@
+boar.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 261, 240
+body
+bounds: 269, 4, 211, 183
+arm-near
+bounds: 4, 248, 100, 147
+arm-far
+bounds: 108, 248, 99, 139
+leg-near
+bounds: 211, 248, 64, 138
+leg-far
+bounds: 279, 248, 65, 134
+ear-near
+bounds: 348, 248, 98, 119
+ear-far
+bounds: 4, 399, 87, 106
+tail
+bounds: 95, 399, 80, 78

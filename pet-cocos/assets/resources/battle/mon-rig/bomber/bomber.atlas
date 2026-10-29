@@ -1,0 +1,18 @@
+bomber.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+body
+bounds: 2, 2, 247, 236
+top
+bounds: 251, 2, 145, 118
+face-angry
+bounds: 2, 240, 120, 77
+face-hurt
+bounds: 124, 240, 123, 73
+foot-right
+bounds: 249, 240, 70, 42
+foot-left
+bounds: 321, 240, 69, 41

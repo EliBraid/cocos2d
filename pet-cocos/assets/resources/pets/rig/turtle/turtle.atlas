@@ -1,0 +1,20 @@
+turtle.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+body
+bounds: 4, 4, 211, 221
+head
+bounds: 219, 4, 270, 205
+arm-far
+bounds: 4, 229, 97, 134
+arm-near
+bounds: 105, 229, 96, 132
+tail
+bounds: 205, 229, 138, 128
+leg-near
+bounds: 347, 229, 66, 111
+leg-far
+bounds: 417, 229, 65, 108

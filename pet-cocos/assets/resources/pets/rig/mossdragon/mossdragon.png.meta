@@ -1,0 +1,134 @@
+{
+  "ver": "1.0.27",
+  "importer": "image",
+  "imported": true,
+  "uuid": "28786397-b70c-4e14-81f6-88b69c7a4f80",
+  "files": [
+    ".json",
+    ".png"
+  ],
+  "subMetas": {
+    "6c48a": {
+      "importer": "texture",
+      "uuid": "28786397-b70c-4e14-81f6-88b69c7a4f80@6c48a",
+      "displayName": "mossdragon",
+      "id": "6c48a",
+      "name": "texture",
+      "userData": {
+        "wrapModeS": "clamp-to-edge",
+        "wrapModeT": "clamp-to-edge",
+        "imageUuidOrDatabaseUri": "28786397-b70c-4e14-81f6-88b69c7a4f80",
+        "isUuid": true,
+        "visible": false,
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f9941": {
+      "importer": "sprite-frame",
+      "uuid": "28786397-b70c-4e14-81f6-88b69c7a4f80@f9941",
+      "displayName": "mossdragon",
+      "id": "f9941",
+      "name": "spriteFrame",
+      "userData": {
+        "trimThreshold": 1,
+        "rotated": false,
+        "offsetX": -14.5,
+        "offsetY": 64.5,
+        "trimX": 4,
+        "trimY": 4,
+        "width": 987,
+        "height": 375,
+        "rawWidth": 1024,
+        "rawHeight": 512,
+        "borderTop": 0,
+        "borderBottom": 0,
+        "borderLeft": 0,
+        "borderRight": 0,
+        "packable": true,
+        "pixelsToUnit": 100,
+        "pivotX": 0.5,
+        "pivotY": 0.5,
+        "meshType": 0,
+        "vertices": {
+          "rawPosition": [
+            -493.5,
+            -187.5,
+            0,
+            493.5,
+            -187.5,
+            0,
+            -493.5,
+            187.5,
+            0,
+            493.5,
+            187.5,
+            0
+          ],
+          "indexes": [
+            0,
+            1,
+            2,
+            2,
+            1,
+            3
+          ],
+          "uv": [
+            4,
+            508,
+            991,
+            508,
+            4,
+            133,
+            991,
+            133
+          ],
+          "nuv": [
+            0.00390625,
+            0.259765625,
+            0.9677734375,
+            0.259765625,
+            0.00390625,
+            0.9921875,
+            0.9677734375,
+            0.9921875
+          ],
+          "minPos": [
+            -493.5,
+            -187.5,
+            0
+          ],
+          "maxPos": [
+            493.5,
+            187.5,
+            0
+          ]
+        },
+        "isUuid": true,
+        "imageUuidOrDatabaseUri": "28786397-b70c-4e14-81f6-88b69c7a4f80@6c48a",
+        "atlasUuid": "",
+        "trimType": "auto"
+      },
+      "ver": "1.0.12",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "type": "sprite-frame",
+    "fixAlphaTransparencyArtifacts": false,
+    "hasAlpha": true,
+    "redirect": "28786397-b70c-4e14-81f6-88b69c7a4f80@6c48a"
+  }
+}

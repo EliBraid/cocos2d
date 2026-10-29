@@ -1,0 +1,24 @@
+﻿import {Node,UITransform,sp} from 'cc';
+import {ForestBrain} from './ForestLogic';import {PetAppearance} from './PetAppearance';import {FOX_PROFILE} from './PetProfile';import {FOX_RIG} from './ActiveRig';
+export class ForestPetView {
+ node:Node;skeleton:sp.Skeleton;appearance:PetAppearance;pose='';skin='';expression='';lastAttack=-1;events:{name:string;at:number}[]=[];strikes=0;steps=0;walkClock=0;
+ onStrike:()=>void=()=>{};onStep:()=>void=()=>{};
+ constructor(parent:Node,data:sp.SkeletonData){this.node=new Node('Fox.NativeSpine');this.node.layer=parent.layer;parent.addChild(this.node);this.node.addComponent(UITransform).setContentSize(FOX_RIG.source.size,FOX_RIG.source.size);this.skeleton=this.node.addComponent(sp.Skeleton);this.skeleton.setAnimationCacheMode(0);this.skeleton.premultipliedAlpha=false;this.skeleton.skeletonData=data;this.appearance=new PetAppearance(this.skeleton,{...FOX_PROFILE.appearance});
+  const names=['idle','walk','walk-back','walk-front','start','stop','turn','attack','hit','happy','sniff','sleep','wake'];for(const a of names)for(const b of names)if(a!==b)this.skeleton.setMix(a,b,a==='hit'||b==='hit'?.035:.1);
+  this.skeleton.setEventListener((entry:any,event:any)=>{if(entry.trackIndex!==0)return;const name=event.data?.name||event.getData?.()?.name;if(!name)return;this.events.push({name,at:Date.now()});if(this.events.length>60)this.events.shift();if(name==='strike'){this.strikes++;this.onStrike();}else if(name.startsWith('step-')){this.steps++;this.onStep();}});this.skeleton.setAnimation(2,'look-center',true);
+ }
+ update(brain:ForestBrain,walkClock:number){this.appearance.apply(brain.back);this.skin=brain.back?'back':'front';const expression=brain.expression;if(this.expression!==expression){this.skeleton.setAnimation(1,'face-'+expression,true);this.expression=expression;}
+  const moving=['start','walk','turn'].includes(brain.state),pose=moving?this.walkClip(brain):brain.state,restart=pose==='attack'&&this.lastAttack!==brain.attackId;if(restart)this.lastAttack=brain.attackId;if(this.pose!==pose||restart){const e=this.skeleton.setAnimation(0,pose,['idle','walk','walk-back','walk-front','sleep'].includes(pose)) as any;if(moving&&e)e.timeScale=0;this.pose=pose;}
+  if(moving){const e=this.skeleton.getCurrent(0) as any;if(e){e.timeScale=0;e.trackTime=walkClock*FOX_RIG.walkDuration;e.alpha=1;}}this.walkClock=walkClock;this.node.setScale(brain.facing,1,1);
+ }
+ // Side walk for lateral travel, walk-back when heading away, walk-front when
+ // heading mostly toward the camera (hysteresis avoids flicker on diagonals).
+ private toward=false;
+ walkView():'side'|'away'|'toward'{return this.pose==='walk-back'?'away':this.pose==='walk-front'?'toward':'side';}
+ private walkClip(brain:ForestBrain){if(brain.back){this.toward=false;return 'walk-back';}const v=brain.velocity,len=Math.hypot(v.x,v.z);if(len>.05){const depth=Math.abs(v.z)/len;if(depth>.82)this.toward=true;else if(depth<.6)this.toward=false;}return this.toward?'walk-front':'walk';}
+ // Terrain moves a separate parent. Native animation retains complete control
+ // of heel/toe roll, passing height, knee pose and the matching body channels.
+ terrainOffset(side:'left'|'right',dx:number,dy:number,nativeDX=0,nativeGroundDY=0){const ground=this.skeleton.findBone('ground-'+side) as any,ankle=this.skeleton.findBone('ankle-'+side) as any;if(!ground)return;ground.x=dx-nativeDX;ground.y=dy-nativeGroundDY+(this.pose.startsWith('walk')?0:FOX_RIG.targets[side].ankle.y-ankle.data.y);}
+ look(direction:number){this.skeleton.setAnimation(2,direction<-.2?'look-left':direction>.2?'look-right':'look-center',true);}
+ debug(){const get=(name:string)=>{const b=this.skeleton.findBone(name) as any;return {rotation:b?.rotation,x:b?.worldX,y:b?.worldY};};const attachment=(name:string)=>{const s=this.skeleton.findSlot(name) as any;return (s?.getAttachment?.()||s?.attachment)?.name||'';};return {pose:this.pose,skin:this.skin,expression:this.expression,steps:this.steps,strikes:this.strikes,walkClock:this.walkClock,tail:get('tail-tip'),ear:get('ear-left'),gaze:get('gaze'),head:get('head'),leftFoot:get('paw-left'),rightFoot:get('paw-right'),headAttachment:attachment('head'),eyeAttachment:attachment('eye-left'),mouthAttachment:attachment('mouth'),appearance:this.appearance.debug(),events:this.events};}
+}

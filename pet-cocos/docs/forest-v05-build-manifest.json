@@ -1,0 +1,18 @@
+{
+  "version": "0.5.5",
+  "engine": "Cocos Creator 3.8.8",
+  "spine": "4.2.73",
+  "tests": {
+    "logicAndAssets": 59,
+    "typecheck": "passed",
+    "creatorBuildExit": 36,
+    "nativeWalkPreview": "passed"
+  },
+  "art": "Builtin image_gen reference edits and registered original drawing extraction",
+  "outputs": {
+    "assets\\resources\\forest\\fox\\fox.json": "41e4bd8aefda728a15460c818041a845488e0c0ce36b272f2c546b729ded3022",
+    "assets\\resources\\forest\\fox\\fox.atlas": "2ab32a726306e7f7a6bda9062bdde590a8737a6840d7626d13c42f0705b15fed",
+    "assets\\resources\\forest\\fox\\fox.png": "1ff00a23dacf7eaf067ca421fe55249f269d766558f2dae36c3a61303c24fda0"
+  },
+  "walk": "directional arm drawings, buried shoulder sockets, rear two-lane depth stride"
+}

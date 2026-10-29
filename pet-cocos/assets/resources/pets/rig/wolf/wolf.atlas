@@ -1,0 +1,26 @@
+wolf.png
+size: 1024, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 288, 216
+tail
+bounds: 296, 4, 230, 200
+sword
+bounds: 530, 4, 127, 178
+body
+bounds: 661, 4, 211, 142
+ear-near
+bounds: 876, 4, 104, 123
+leg-near
+bounds: 4, 224, 66, 122
+arm-near
+bounds: 74, 224, 87, 117
+arm-far
+bounds: 165, 224, 83, 114
+leg-far
+bounds: 252, 224, 65, 112
+ear-far
+bounds: 321, 224, 87, 106

@@ -1,0 +1,20 @@
+seal.png
+size: 1024, 256
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 297, 234
+body
+bounds: 305, 4, 211, 193
+sword
+bounds: 520, 4, 118, 166
+leg-near
+bounds: 642, 4, 66, 117
+leg-far
+bounds: 712, 4, 65, 116
+arm-far
+bounds: 781, 4, 97, 110
+arm-near
+bounds: 882, 4, 99, 104

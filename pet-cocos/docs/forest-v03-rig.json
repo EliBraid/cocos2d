@@ -1,0 +1,31 @@
+{
+  "bones": 28,
+  "slots": 16,
+  "skins": 2,
+  "weightedMeshes": 10,
+  "animations": [
+    "idle",
+    "walk",
+    "start",
+    "stop",
+    "turn",
+    "attack",
+    "hit",
+    "happy",
+    "sniff",
+    "sleep",
+    "wake",
+    "face-calm",
+    "face-happy",
+    "face-focus",
+    "face-alert",
+    "face-sleep",
+    "look-left",
+    "look-right",
+    "look-center"
+  ],
+  "hasDeformTimeline": true,
+  "separateFaceParts": true,
+  "backView": true,
+  "fire": "native Spine 4.2 weighted flame"
+}

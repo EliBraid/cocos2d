@@ -1,0 +1,60 @@
+{
+  "method": "built-in image_gen",
+  "notes": "Original art. Images fixed locally; deterministic connected-component extraction by sharp. No remote generation at runtime.",
+  "entries": [
+    {
+      "key": "forest-ground-v03",
+      "prompt": "Use case: stylized-concept. Production asset: a standalone TOP-DOWN ground painting for a 2.5D game, square 1:1. Warm ivory parchment soil, broad pale winding path entering from bottom center, spreading into a quiet circular woodland clearing in the middle, then a narrower path exiting top center. Around edges restrained sage green moss and tiny tufts, sparse hand-inked pebbles, stepping stones, a faint circular stone rune in upper middle. Completely FLAT overhead floor texture, no perspective horizon. NO trees, NO buildings, NO torches, NO crystals, NO characters, NO cast shadows, NO interface, NO words, NO frames. Keep central 65 percent spacious readable pale ground. Art: confident thick imperfect black ink contours and subtle woodcut hatching, charming cozy storybook game, very limited dusty olive and warm sand palette, flat shapes, no gradients, no 3D render. Full bleed square texture to put on an actual 3D ground plane. High quality coherent illustration, not a mockup.",
+      "transparent_background": false,
+      "saved": "source-assets/forest-v03/ground.png"
+    },
+    {
+      "key": "forest-plants-v03",
+      "prompt": "Use case: stylized-concept. Production transparent sprite atlas, exact 2 by 2 equal square cells on a genuinely transparent canvas, no grid lines, no labels, no shadows outside the objects. Four separate ORIGINAL woodland props, consistent hand-inked storybook game art with bold black contours, sparse woodcut hatching, warm ivory highlights and subdued sage/olive foliage. Top left: a tall leaning gnarled woodland tree with a visible trunk, roots and rounded irregular canopy, full object. Top right: a different tall tree leaning opposite direction, full trunk and canopy. Bottom left: a low dense graceful clump of long grass, dark base and pale green blade tips, suitable for bending when a character walks through. Bottom right: a broad spreading fern cluster, several graceful fronds. Each object entirely within its own cell, 12 percent transparent padding from cell borders, objects do not touch or overlap. Straight-on game prop view with a slight elevated three-quarter sense, flat 2D drawing intended for upright camera-facing planes. NO ground tile, NO scene backdrop, NO text, NO interface. Consistent economical shapes and strong silhouettes, no painterly blur, no 3D modeling.",
+      "transparent_background": true,
+      "saved": "source-assets/forest-v03/plants.png"
+    },
+    {
+      "key": "forest-fire-props-v03",
+      "prompt": "Use case: stylized-concept. A production 2 by 2 transparent sprite atlas with exactly four independent sprites in equal square cells, all isolated with generous transparent padding, no labels and no grid. Original cozy ink-on-parchment forest game art, heavy slightly imperfect black contours, flat restrained colors and sparse hatching. Top left: a short rustic standing wooden brazier/torch post with tripod feet, a little tied red cloth, empty dark metal bowl at top, NO fire or glow, full prop visible. Top right: a low cluster of pale angular mossy rocks and two tiny cream mushrooms, complete standalone prop. Bottom left: a single bright golden-orange stylized flame shape with a pale cream hot center, 2D flat bold silhouette, no torch, no glow, flame leans gently LEFT. Bottom right: a complementary flame shape from same animation design, leans gently RIGHT, no torch or glow. All four parts drawn for the same camera-facing 2D game scene. No background, no cast shadows, no words, no UI, no gradients or realistic smoke.",
+      "transparent_background": true,
+      "saved": "source-assets/forest-v03/props.png"
+    },
+    {
+      "key": "fox-front-parts-v03",
+      "prompt": "Use case: character-reference. EDIT TARGET is the supplied original orange fox swordsman. Produce a PRODUCTION CUTOUT RIGGING PARTS ATLAS for this exact character, retaining orange and ivory fur, black paws, red scarf, black outlined hand-drawn style and appealing large head. Make the face kinder and curious rather than angry. Transparent background. Exactly 4 columns by 4 rows, equal square cells, each part centered with 15 percent padding, no grid, no labels, no complete assembled fox. Parts have completed hidden joint ends for overlap. Flat economical inked shapes with restrained shading, coherent character design. Row 1 from left: (1) round fox HEAD BASE with ivory cheek/muzzle, but NO ears, NO eyes, NO eyebrows, NO nose or mouth; (2) LEFT triangular ear with ivory inner fur; (3) RIGHT triangular ear; (4) small orange TORSO with ivory belly, NO head, scarf, limbs or tail. Row 2: (1) LEFT upper arm orange fur segment; (2) RIGHT upper arm segment; (3) LEFT forearm ending in black paw, palm closed; (4) RIGHT forearm ending in black paw ready to hold a sword, no sword. Row 3: (1) LEFT full short leg ending in black foot, ivory ankle; (2) RIGHT full short leg with black foot; (3) big curled orange TAIL with ivory tip, completed root; (4) flowing red SCARF TAIL cloth strip, knot separate, full cloth. Row 4: (1) red SCARF KNOT and collar with small gold flame clasp; (2) a PAIR of friendly open black EYES with white highlights and separate subtle brows, transparent around them, no head; (3) matching PAIR of closed smiling eye lines for blink, no head; (4) small black NOSE plus a gentle smiling MOUTH together on transparency, no head or muzzle fill. Every cell contains only the specified detached part. NO part duplicates across cells, NO cell-border crossing. This is for real Spine animation, consistent proportions within each part, no scenery, no text.",
+      "referenced_image_paths": [
+        "source-assets/forest-v03/reference-fox.png"
+      ],
+      "transparent_background": true,
+      "saved": "source-assets/forest-v03/front.png"
+    },
+    {
+      "key": "fox-back-parts-v03",
+      "prompt": "Use case: character-reference. EDIT TARGET is supplied original orange fox swordsman, create four detached BACK-VIEW parts for the same character as a production 2 by 2 sprite sheet, transparent background with no grid or labels. Same bold ink outlines, orange and ivory fur, black paws, red scarf, economical hand-inked 2D game art. Camera sees THREE-QUARTER BACK, looking toward upper right, as fox walks away. Top left: the back of its large fluffy HEAD INCLUDING both triangular ears, solid orange rear fur, NO eyes, NO face, NO mouth; broad round head silhouette with matching ears. Top right: the small TORSO seen from behind, orange back fur with red scarf collar draped on shoulders, NO head, NO arms, NO legs, NO tail. Bottom left: large fluffy orange TAIL with ivory tip, seen from back in gentle curl, detached root, no body. Bottom right: a PAIR of SHORT back legs with black feet and ivory ankles, detached, no torso. Every object fully isolated in its equal square cell, generous transparent margin, no overlap, no painted ground or shadows. Match the supplied original fox design and scale relationships, not a different animal.",
+      "referenced_image_paths": [
+        "source-assets/forest-v03/reference-fox.png"
+      ],
+      "transparent_background": true,
+      "saved": "source-assets/forest-v03/back.png"
+    },
+    {
+      "key": "fox-front-clean-v03",
+      "prompt": "Edit this production fox cutout atlas. Preserve all sixteen parts, their exact layout, spacing, scale, colors and line-art style. ONLY fix the artificial tan/skin-colored oval joint caps: remove those beige socket circles and their oval outlines on the upper arms, forearms, legs and neck. Extend the matching orange fur naturally over those cap areas with finished overlap shapes, so the detached parts can be joined in a Spine rig without exposed skin-colored mechanical-looking joints. Keep the ivory chest, ivory ankles and black paws untouched. The head base stays without eyes, ears, nose or mouth. Keep separate eyes and mouth sprites in the last row exactly as they are. Transparent background, no added shadows, no grid, no labels, no new parts. This is a minor cleanup of the existing atlas, not a redesign.",
+      "referenced_image_paths": [
+        "source-assets/forest-v03/front.png"
+      ],
+      "transparent_background": true,
+      "saved": "source-assets/forest-v03/front-clean.png"
+    },
+    {
+      "key": "fox-back-clean-v03",
+      "prompt": "Minor cleanup edit of this exact four-part BACK VIEW fox atlas. Preserve positions, scale, shapes, all four parts and transparent background exactly. Remove ONLY the small outlined tan/orange oval neck socket visible on the bottom edge of the detached back-of-head part (top left cell). Replace the socket oval and its outline with continuous matching orange fur and the natural fluffy outer silhouette. The back of the head must have NO face, NO eyes, NO nose, NO mouth and NO visible mechanical joint mark. Also remove any tan artificial joint cap on the rear leg roots, replacing with orange fur, while preserving black paws and white ankles. Do not redesign the fox, move parts, add text or alter the scarf.",
+      "referenced_image_paths": [
+        "source-assets/forest-v03/back.png"
+      ],
+      "transparent_background": true,
+      "saved": "source-assets/forest-v03/back-clean.png"
+    }
+  ]
+}

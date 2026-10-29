@@ -1,0 +1,18 @@
+boss3.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+body
+bounds: 2, 2, 312, 262
+top
+bounds: 2, 266, 206, 122
+face-angry
+bounds: 210, 266, 121, 84
+face-hurt
+bounds: 333, 266, 120, 75
+foot-left
+bounds: 2, 390, 75, 53
+foot-right
+bounds: 79, 390, 74, 53

@@ -1,0 +1,18 @@
+fuzz.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+body
+bounds: 2, 2, 270, 257
+top
+bounds: 274, 2, 137, 76
+face-angry
+bounds: 2, 261, 120, 71
+face-hurt
+bounds: 124, 261, 106, 64
+foot-left
+bounds: 232, 261, 73, 48
+foot-right
+bounds: 307, 261, 72, 48

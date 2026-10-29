@@ -1,0 +1,249 @@
+{
+  "canvas": {
+    "width": 1280,
+    "height": 1280,
+    "origin": [
+      660,
+      1180
+    ],
+    "unitsPerPixel": 0.48
+  },
+  "layers": [
+    {
+      "name": "tail",
+      "left": 39,
+      "top": 635,
+      "width": 461,
+      "height": 521,
+      "canvas": [
+        1280,
+        1280
+      ]
+    },
+    {
+      "name": "weapon",
+      "left": 937,
+      "top": 361,
+      "width": 314,
+      "height": 607,
+      "canvas": [
+        1280,
+        1280
+      ]
+    },
+    {
+      "name": "leg-left",
+      "left": 337,
+      "top": 929,
+      "width": 350,
+      "height": 291,
+      "canvas": [
+        1280,
+        1280
+      ]
+    },
+    {
+      "name": "leg-right",
+      "left": 682,
+      "top": 923,
+      "width": 296,
+      "height": 279,
+      "canvas": [
+        1280,
+        1280
+      ]
+    },
+    {
+      "name": "arm-right",
+      "left": 847,
+      "top": 773,
+      "width": 228,
+      "height": 215,
+      "canvas": [
+        1280,
+        1280
+      ]
+    },
+    {
+      "name": "torso",
+      "left": 462,
+      "top": 713,
+      "width": 422,
+      "height": 351,
+      "canvas": [
+        1280,
+        1280
+      ]
+    },
+    {
+      "name": "arm-left",
+      "left": 424,
+      "top": 790,
+      "width": 202,
+      "height": 185,
+      "canvas": [
+        1280,
+        1280
+      ]
+    },
+    {
+      "name": "scarf",
+      "left": 176,
+      "top": 594,
+      "width": 754,
+      "height": 231,
+      "canvas": [
+        1280,
+        1280
+      ]
+    },
+    {
+      "name": "head",
+      "left": 310,
+      "top": 71,
+      "width": 715,
+      "height": 651,
+      "canvas": [
+        1280,
+        1280
+      ]
+    },
+    {
+      "name": "brooch",
+      "left": 780,
+      "top": 653,
+      "width": 184,
+      "height": 159,
+      "canvas": [
+        1280,
+        1280
+      ]
+    },
+    {
+      "name": "eye-left",
+      "left": 641,
+      "top": 500,
+      "width": 70,
+      "height": 100,
+      "canvas": [
+        1280,
+        1280
+      ]
+    },
+    {
+      "name": "eye-right",
+      "left": 808,
+      "top": 493,
+      "width": 82,
+      "height": 93,
+      "canvas": [
+        1280,
+        1280
+      ]
+    },
+    {
+      "name": "brow-left",
+      "left": 633,
+      "top": 484,
+      "width": 37,
+      "height": 22,
+      "canvas": [
+        1280,
+        1280
+      ]
+    },
+    {
+      "name": "brow-right",
+      "left": 863,
+      "top": 477,
+      "width": 24,
+      "height": 22,
+      "canvas": [
+        1280,
+        1280
+      ]
+    },
+    {
+      "name": "nose",
+      "left": 793,
+      "top": 572,
+      "width": 42,
+      "height": 27,
+      "canvas": [
+        1280,
+        1280
+      ]
+    },
+    {
+      "name": "mouth",
+      "left": 740,
+      "top": 588,
+      "width": 84,
+      "height": 46,
+      "canvas": [
+        1280,
+        1280
+      ]
+    },
+    {
+      "name": "back",
+      "left": 13,
+      "top": 16,
+      "width": 1252,
+      "height": 1239,
+      "canvas": [
+        1280,
+        1280
+      ]
+    },
+    {
+      "name": "back-scarf",
+      "left": 173,
+      "top": 533,
+      "width": 722,
+      "height": 250,
+      "canvas": [
+        1280,
+        1280
+      ]
+    }
+  ],
+  "facialFeatures": {
+    "eye-left": [
+      624,
+      503,
+      709,
+      596
+    ],
+    "eye-right": [
+      811,
+      496,
+      890,
+      582
+    ],
+    "brow-left": [
+      615,
+      460,
+      697,
+      502
+    ],
+    "brow-right": [
+      814,
+      454,
+      883,
+      495
+    ],
+    "nose": [
+      776,
+      558,
+      831,
+      595
+    ],
+    "mouth": [
+      722,
+      591,
+      820,
+      642
+    ]
+  }
+}
