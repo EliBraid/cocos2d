@@ -1,4 +1,4 @@
-// 萌宠守卫战 · 实时核心战. Builds the whole battle screen at runtime:
+// 灵爪守望 · 实时核心战. Builds the whole battle screen at runtime:
 // board, cores, portals, Spine units, HUD, deck cards and result panel.
 // Rules live in battle/BattleCore.ts (pure, tested); this file only presents them.
 // Player input: pick a card -> tap one of the six slots; captain skill. Everything else is automatic.
@@ -9,7 +9,10 @@ import {Ads} from './Ads';
 import {TOWER,towerStage,BATTLE,PETS,JOBS,RARITY,SLOTS,STAGES,CAPTAINS,stageName,MONSTER_VIEW,MONSTERS,PET_LV,BATTLE_CARDS,CARD_Q,INTENTS,WAVE,SPEEDS,SEG,segName} from './battle/BattleConfig';
 import type {CaptainKind,PetKind,PetMods,PetSkill} from './battle/BattleConfig';
 import {Guide} from './Guide';
-import {shareNow} from './Share';
+import {fitScreen,placeBox,dockTop,FIT} from './Screen';
+import {shareNow,canShare} from './Share';
+import './Platform';
+import {towerRank} from './Cloud';
 import {PaperUI,C} from './PaperUI';
 import {PetAppearance} from './PetAppearance';
 import {PET_LOOK} from './PetProfile';
@@ -24,6 +27,10 @@ type View={tint?:number[];node:Node;skel:sp.Skeleton;anim:string;hitT:number;dyi
 /** painted effect sprite (tools/fx-art): 'fly' travels x,y -> x2,y2 on an arc facing its motion, 'pop' grows, settles and fades */
 type SFx={n:Node;op:UIOpacity;kind:'fly'|'pop';x:number;y:number;x2:number;y2:number;t:number;life:number;arc:number;then?:()=>void;rise:number;flat:number;dir:number;spin:number;alpha:number};
 const FX_ART=['arrow','star','fireball','thorn','orb','spark','slash','boom','heal','shield','ice','bolt','circle','meteor','shout','vines'];
+/** stands in for a Graphics whose drawing is skipped this frame (dirty() said nothing changed) */
+const NOOP:any=new Proxy({},{get:()=>()=>{},set:()=>true});
+/** pulsing / blinking overlays are redrawn this many times a second instead of every frame */
+const ANIM_HZ=15;
 type Fx={kind:'fan'|'ring'|'flash'|'line'|'rain'|'tele'|'shard';vx?:number;vy?:number;top?:boolean;x:number;y:number;t:number;life:number;dir?:number;color:Color;r:number;x2?:number;y2?:number};
 const SPEED_KEY='pet-guardians-speed';
 @ccclass('BattleSlice')
@@ -31,7 +38,9 @@ export class BattleSlice extends Component {
  battle!:Battle;ui=new PaperUI();ready=false;speed=SPEEDS[0];private x5=false;private adPanel:Node|null=null;
  private art:Record<string,SpriteFrame>={};private painted:Record<string,sp.SkeletonData>={};private monRigs:Record<string,sp.SkeletonData>={};private petData!:sp.SkeletonData;private minionData!:sp.SkeletonData;
  private board!:Node;private topG!:Graphics;private topText!:Node;private root!:Node;private scenery!:Node;private aheadCrystal!:Node;private shakeT=0;private realDt=0;private enemyName!:Label;private lastTrans=false;private units!:Node;private shadows!:Graphics;private bars!:Graphics;private fxG!:Graphics;private fxLayer!:Node;private hud!:Node;
- private views=new Map<number,View>();private fx:Fx[]=[];private sfx:SFx[]=[];private sfxLayer!:Node;private guide:Guide|null=null;private towerFloor=0;private guided={captain:false,up:false};private portals:Node[]=[];private cores:{node:Node;x:number;base:number;shake:number}[]=[];
+ private views=new Map<number,View>();private fx:Fx[]=[];private sfx:SFx[]=[];private sfxLayer!:Node;private guide:Guide|null=null;private fxDrawn=false;private gk=new Map<Graphics,string>();
+ /** Graphics are re-tessellated and re-uploaded on every clear(); only redraw when the drawn state's key changes */
+ private dirty(g:Graphics,key:string){if(this.gk.get(g)===key)return false;this.gk.set(g,key);g.clear();return true;}private towerFloor=0;private guided={captain:false,up:false};private portals:Node[]=[];private cores:{node:Node;x:number;base:number;shake:number}[]=[];
  private selected=-1;private aiming=false;private toast!:Label;private toastT=0;private clock=0;
  private goldLabel!:Label;private timeLabel!:Label;private killLabel!:Label;private enemyBar!:(v:number)=>void;private myBar!:(v:number)=>void;private enemyHp!:Label;private myHp!:Label;
  private cards:{node:Node;cost:Label;costIcon:Node;state:Label;cd:Label;shade:Graphics;avatar:Node;frame:Node;lv:Label}[]=[];
@@ -39,7 +48,7 @@ export class BattleSlice extends Component {
  private levelLabel!:Label;private xpBar!:(v:number)=>void;private capShade!:Graphics;private capLabel!:Label;private capRing!:Graphics;private pauseLayer!:Node;private resultLayer:Node|null=null;
  async start(){
   try{
-   view.setDesignResolutionSize(540,960,ResolutionPolicy.SHOW_ALL);this.node.getComponent(UITransform)!.setContentSize(540,960);
+   fitScreen(this.node);
    const load=<T>(name:string,type:any)=>new Promise<T>((ok,fail)=>resources.load(name,type,(e,a)=>e?fail(e):ok(a as T)));
    const frames=['battle/board','battle/portal-ring','battle/crystal-red','battle/ember-avatar','art/crystal'];
    await Promise.all(FX_ART.map(async n=>{try{this.art['fx:'+n]=await load<SpriteFrame>(`battle/fx/${n}/spriteFrame`,SpriteFrame);}catch{}}));
@@ -62,7 +71,7 @@ export class BattleSlice extends Component {
  // ================================================================== layout
  private sprite(parent:Node,key:string,x:number,y:number,w:number,h:number){const n=this.ui.node(parent,key,x,y,w,h),s=n.addComponent(Sprite);s.sizeMode=Sprite.SizeMode.CUSTOM;s.spriteFrame=this.art[key];n.getComponent(UITransform)!.setContentSize(w,h);return n;}
  private build(){
-  const root=this.ui.node(this.node,'Battle',270,480,540,960);this.root=root;
+  const root=this.ui.node(this.node,'Battle',270,480,540,960);this.root=root;placeBox(root);this.ui.rect(root,'Backdrop',270,480,540,960,new Color(240,231,208),false);
   // scenery scrolls during the leg-change cutscene; "Ahead" is the stretch of ground just above the screen
   const sc=this.ui.node(root,'Scenery',270,480,540,960);this.scenery=sc;
   this.board=this.sprite(sc,'battle/board',270,480,540,960);const ahead=this.ui.node(sc,'Ahead',270,-480,540,960);this.sprite(ahead,'battle/board',270,480,540,960);
@@ -75,13 +84,13 @@ export class BattleSlice extends Component {
   this.units=this.ui.node(root,'Units',270,480,540,960);
   const barNode=this.ui.node(root,'Bars',270,480,540,960);this.bars=barNode.addComponent(Graphics);
   const fxNode=this.ui.node(root,'Fx',270,480,540,960);this.fxG=fxNode.addComponent(Graphics);this.sfxLayer=this.ui.node(root,'FxSprites',270,480,540,960);this.fxLayer=this.ui.node(root,'FxText',270,480,540,960);
-  this.hud=this.ui.node(root,'HUD',270,480,540,960);this.buildHud();this.buildDeck();
+  this.hud=this.ui.node(root,'HUD',270,480,540,960);this.buildHud();dockTop(this.hud,120);this.buildDeck();
   const tf=this.ui.node(this.hud,'TopFx',270,480,540,960);this.topG=tf.addComponent(Graphics);this.topText=tf;
   this.toast=this.ui.label(this.hud,'',270,430,460,36,20,true);this.toast.node.addComponent(UIOpacity).opacity=0;
   this.say('点下方的宠物卡，再点一个站位把它派上场',4);
  }
  private buildHud(){const h=this.hud,ui=this.ui;
-  ui.frame(h,'Top',270,36,532,62,'panel');ui.icon(h,'paw',38,36,30);ui.label(h,'萌宠守卫战',122,36,130,40,24,true,C.ink,HorizontalTextAlignment.LEFT);
+  ui.frame(h,'Top',270,36,532,62,'panel');ui.icon(h,'paw',38,36,30);ui.label(h,'灵爪守望',122,36,130,40,24,true,C.ink,HorizontalTextAlignment.LEFT);
   ui.frame(h,'GoldBox',334,36,112,38,'pill');ui.icon(h,'coin',292,36,24);this.goldLabel=ui.label(h,'0',345,36,80,32,22,true);
   try{const v=Number(sys.localStorage.getItem(SPEED_KEY));if(v===2||v===3)this.speed=v;}catch{}
   ui.button(h,'speed','x'+this.speed,426,36,52,40,()=>this.speedTap(),C.white,18);
@@ -136,7 +145,7 @@ export class BattleSlice extends Component {
   if(!b.upgradeReady(i)){this.say(`${PETS[c.kind].name}经验 ${c.xp}/${b.petXpNeed(i)}，击败怪物积累经验`,1.4);return;}
   if(!b.upgrade(i))this.say(`金币不足，升级需要 ${b.upgradeCost(i)}`,1.4);else this.guided.up=true;}
  // ------------------------------------------------------------- speed / ads
- private speedTap(){const order=[2,3,5],next=order[(order.indexOf(this.speed)+1)%order.length];
+ private speedTap(){const order=this.x5||Ads.available('x5')?[2,3,5]:[2,3],next=order[(order.indexOf(this.speed)+1)%order.length];
   if(next===5&&!this.x5){this.openAdPanel();return;}this.setSpeed(next);}
  private setSpeed(v:number){this.speed=v;this.setText('speed','x'+v);if(v!==5)try{sys.localStorage.setItem(SPEED_KEY,String(v));}catch{}}
  private openAdPanel(){if(this.adPanel)return;const ui=this.ui,P=ui.node(this.hud,'AdPanel',270,480,540,960);this.adPanel=P;this.battle.paused=true;
@@ -276,7 +285,7 @@ export class BattleSlice extends Component {
    bar.strokeColor=new Color(110,170,255,200);bar.lineWidth=3;bar.ellipse(BATTLE.enemyCore.x-270,480-(BATTLE.enemyCore.y-30),66,72);bar.stroke();}
   this.renderIntent();this.renderTray();
   // fx
-  this.fxG.clear();this.topG.clear();this.fx=this.fx.filter(x=>(x.t+=x.top?this.realDt:dt)<x.life);for(const x of this.fx){if(x.t<0)continue;const k=x.t/x.life,a=Math.round(255*(1-k)),f=x.top?this.topG:this.fxG;
+  if(this.fx.length||this.fxDrawn){this.fxG.clear();this.topG.clear();}this.fxDrawn=this.fx.length>0;this.fx=this.fx.filter(x=>(x.t+=x.top?this.realDt:dt)<x.life);for(const x of this.fx){if(x.t<0)continue;const k=x.t/x.life,a=Math.round(255*(1-k)),f=x.top?this.topG:this.fxG;
    if(x.kind==='ring'){f.strokeColor=new Color(x.color.r,x.color.g,x.color.b,a);f.lineWidth=4;f.ellipse(x.x-270,480-x.y,x.r*(.6+k),x.r*(.6+k)*.42);f.stroke();}
    else if(x.kind==='tele'){const cx=x.x-270,cy=480-x.y;f.fillColor=new Color(255,60,50,Math.round(36+34*Math.sin(x.t*14)*Math.sin(x.t*14)));f.ellipse(cx,cy,x.r,x.r*.5);f.fill();f.fillColor=new Color(255,60,50,Math.round(110*k));f.ellipse(cx,cy,x.r*k,x.r*k*.5);f.fill();f.strokeColor=new Color(255,60,50,230);f.lineWidth=3;f.ellipse(cx,cy,x.r,x.r*.5);f.stroke();}
    else if(x.kind==='shard'){const px=x.x+x.vx!*x.t,py=x.y+x.vy!*x.t+260*x.t*x.t,cx=px-270,cy=480-py,s=x.r,ang=x.t*9;f.fillColor=new Color(x.color.r,x.color.g,x.color.b,a);f.moveTo(cx+Math.cos(ang)*s,cy+Math.sin(ang)*s);f.lineTo(cx+Math.cos(ang+1.9)*s*.5,cy+Math.sin(ang+1.9)*s*.5);f.lineTo(cx+Math.cos(ang+Math.PI)*s,cy+Math.sin(ang+Math.PI)*s);f.lineTo(cx+Math.cos(ang-1.2)*s*.5,cy+Math.sin(ang-1.2)*s*.5);f.close();f.fill();}
@@ -287,12 +296,15 @@ export class BattleSlice extends Component {
   this.renderSfx(dt);if(this.guide)this.guideStep(dt);
   // deck cards
   this.deployLabel.string=`场上 ${b.pets.filter(p=>p.state!=='dead'&&!p.summon).length}/6`;
-  this.cards.forEach((c,i)=>{const card=b.cards[i],pet=card.petId?b.pets.find(p=>p.id===card.petId):undefined,why=b.blocked(i),sel=this.selected===i;const sh=c.shade;sh.clear();
+  this.cards.forEach((c,i)=>{const card=b.cards[i],pet=card.petId?b.pets.find(p=>p.id===card.petId):undefined,why=b.blocked(i),sel=this.selected===i;
    c.node.setPosition(c.node.position.x,480-(892-(sel?10:0)),0);
    c.avatar.getComponent(Sprite)!.color=pet?new Color(150,150,150,255):why==='cooldown'?new Color(170,170,170,255):C.white;
    const ready=b.upgradeReady(i),max=card.lv>=PET_LV.max;c.lv.string=max?'MAX':'Lv'+card.lv;
    c.cost.node.active=c.costIcon.active=!pet;c.cost.color=why==='gold'?C.red:C.ink;
    const ok=b.canUpgrade(i),pulse=.5+.5*Math.sin(this.clock*7);
+   // redraw the card overlay only when it changes; animated states at 15 Hz (see dirty())
+   const anim=(pet&&ready&&ok)||(!sel&&!why&&!pet),xpq=max?0:Math.round(Math.min(1,card.xp/PET_LV.xpNeed(card.lv))*40);
+   const sh:any=this.dirty(c.shade,[+!!pet,+ready,+ok,+max,xpq,Math.ceil(card.cd*4),+sel,why||'',anim?Math.floor(this.clock*ANIM_HZ):''].join('|'))?c.shade:NOOP;
    if(pet&&ready){sh.fillColor=ok?new Color(60,185,80,255):new Color(232,142,48,245);sh.roundRect(-44,-51,88,23,9);sh.fill();if(ok){sh.strokeColor=new Color(255,255,255,Math.round(120+120*pulse));sh.lineWidth=2;sh.roundRect(-44,-51,88,23,9);sh.stroke();}
     c.state.string=ok?`升级 ${b.upgradeCost(i)}`:`缺 ${b.upgradeCost(i)-b.gold} 金币`;c.state.color=C.white;}
    else{c.state.string=pet?(max?'满级':'出战中'):'';c.state.color=C.muted;}
@@ -305,9 +317,9 @@ export class BattleSlice extends Component {
    if(sel){sh.strokeColor=C.red;sh.lineWidth=4;sh.rect(-47,-55,94,110);sh.stroke();}
    else if(!why&&!pet){sh.strokeColor=new Color(255,196,64,Math.round(110+90*Math.sin(this.clock*5)));sh.lineWidth=3;sh.rect(-47,-55,94,110);sh.stroke();}});
   // captain button
-  const sr=this.capShade;sr.clear();const frac=b.captainCd/BATTLE.captain.cooldown;
+  const frac=b.captainCd/BATTLE.captain.cooldown,sr:any=this.dirty(this.capShade,String(Math.round(frac*48)))?this.capShade:NOOP;
   if(frac>0){sr.fillColor=new Color(31,32,27,140);sr.moveTo(0,0);for(let i=0;i<=24;i++){const an=Math.PI/2-frac*Math.PI*2*i/24;sr.lineTo(Math.cos(an)*30,Math.sin(an)*30);}sr.close();sr.fill();}
-  const rg=this.capRing;rg.clear();if(this.aiming||b.captainReady()){rg.strokeColor=this.aiming?C.red:new Color(255,196,64,Math.round(150+100*Math.sin(this.clock*5)));rg.lineWidth=4;rg.circle(0,0,33);rg.stroke();}
+  const rgOn=this.aiming||b.captainReady(),rg:any=this.dirty(this.capRing,rgOn?`${this.aiming}|${Math.floor(this.clock*ANIM_HZ)}`:'off')?this.capRing:NOOP;if(rgOn){rg.strokeColor=this.aiming?C.red:new Color(255,196,64,Math.round(150+100*Math.sin(this.clock*5)));rg.lineWidth=4;rg.circle(0,0,33);rg.stroke();}
   this.capLock.active=b.sealT>0;this.capLabel.string=b.sealT>0?`封印 ${Math.ceil(b.sealT)}`:frac>0?`${Math.ceil(b.captainCd)}秒`:CAPTAIN_NAME[b.captain];
   if(this.toastT>0){this.toastT-=dt;this.toast.node.getComponent(UIOpacity)!.opacity=Math.round(255*Math.min(1,this.toastT*3));}
  }
@@ -325,7 +337,7 @@ export class BattleSlice extends Component {
  // ------------------------------------------------------------- legs (segments)
  private segTint(seg:number){return seg>=this.battle.segs-1?new Color(255,255,255,255):new Color(196,128,255,255);}
  /** cutscene timeline: 0..boom the crystal shatters, then the ground scrolls one screen, then the next crystal pops in */
- private renderLeg(dt:number){const b=this.battle;this.shakeT=Math.max(0,this.shakeT-dt);const sh=this.shakeT>0?Math.sin(this.shakeT*80)*7*this.shakeT:0;this.root.setPosition(sh,0,0);
+ private renderLeg(dt:number){const b=this.battle;this.shakeT=Math.max(0,this.shakeT-dt);const sh=this.shakeT>0?Math.sin(this.shakeT*80)*7*this.shakeT:0;this.root.setPosition(sh,FIT.off,0);
   let sy=0;if(b.transT>0){const e=SEG.trans-b.transT;if(e>=SEG.boom&&e<SEG.boom+SEG.scroll){const k=(e-SEG.boom)/SEG.scroll;sy=-960*k*k*(3-2*k);}}this.scenery.setPosition(0,sy,0);
   if(b.transT>0&&!this.lastTrans){this.selected=-1;this.aiming=false;}this.lastTrans=b.transT>0;}
  private crystalLook(){const b=this.battle,c=this.cores[0],sp=c.node.getComponent(Sprite)!;let sc=1,tint=this.segTint(b.seg),alpha=255;
@@ -342,7 +354,7 @@ export class BattleSlice extends Component {
   node.on(Node.EventType.TOUCH_END,(e:EventTouch)=>{e.propagationStopped=true;const it=this.battle.intent;if(it)this.say(`${INTENTS[it.kind].name}：${INTENTS[it.kind].desc}`,2.2);});
   this.intentUI={node,g,icon:null,name,sub,head,kind:''};
   const ex=ui.rect(h,'Expose',158,206,96,30,new Color(255,176,60),true);const el=ui.label(ex,'',48,15,90,24,14,true,C.white);el.enableOutline=true;el.outlineColor=new Color(150,70,10);el.outlineWidth=2;this.exposeUI={node:ex,label:el};ex.active=false;}
- private renderIntent(){const b=this.battle,it=b.intent,U=this.intentUI,g=U.g;g.clear();
+ private renderIntent(){const b=this.battle,it=b.intent,U=this.intentUI,g:any=this.dirty(U.g,String(Math.floor(this.clock*ANIM_HZ)))?U.g:NOOP;
   this.exposeUI.node.active=b.exposed>0;if(b.exposed>0){this.exposeUI.label.string=`破绽 ${Math.ceil(b.exposed)}s`;const k=1+.06*Math.sin(this.clock*8);this.exposeUI.node.setScale(k,k,1);}
   // core effects, drawn relative to the badge (core sprite centre is 112 px left, 24 px up)
   const cx=BATTLE.enemyCore.x-382,cy=206-(BATTLE.enemyCore.y-30),pulse=.5+.5*Math.sin(this.clock*6);
@@ -371,7 +383,7 @@ export class BattleSlice extends Component {
  // ------------------------------------------------------------- card tray (team level rewards)
  private trayCards:{o:Offer;cost:Label;g:Graphics}[]=[];private seenOffers=new Set<number>();
  private renderTray(){const b=this.battle,key=b.offers.map(o=>o.id).join(',');if(key!==this.trayKey){this.trayKey=key;this.buildTray();}
-  for(const t of this.trayCards){const ok=b.gold>=t.o.cost;t.cost.color=ok?C.ink:C.red;t.g.clear();if(ok){t.g.strokeColor=new Color(255,196,64,Math.round(130+110*Math.sin(this.clock*5)));t.g.lineWidth=3;t.g.roundRect(-50,-42,100,84,10);t.g.stroke();}}}
+  for(const t of this.trayCards){const ok=b.gold>=t.o.cost;t.cost.color=ok?C.ink:C.red;const tg:any=this.dirty(t.g,ok?String(Math.floor(this.clock*ANIM_HZ)):'off')?t.g:NOOP;if(ok){tg.strokeColor=new Color(255,196,64,Math.round(130+110*Math.sin(this.clock*5)));tg.lineWidth=3;tg.roundRect(-50,-42,100,84,10);tg.stroke();}}}
  private buildTray(){for(const c of [...this.tray.children])c.destroy();this.trayCards=[];const b=this.battle,ui=this.ui;
   if(b.offers.length){const l=ui.label(this.tray,'点卡牌购买',56,680-(b.offers.length-1)*86-52,100,18,12,true,C.ink);l.enableOutline=true;l.outlineColor=new Color(255,250,236);l.outlineWidth=3;}
   b.offers.forEach((o,i)=>{const d=BATTLE_CARDS.find(c=>c.id===o.card)!,q=CARD_Q[o.q],qc=new Color(q.color[0],q.color[1],q.color[2],255),y=680-i*86;
@@ -387,13 +399,14 @@ export class BattleSlice extends Component {
   tween(n).by(.18,{position:new Vec3(0,18,0)}).to(.5,{position:target},{easing:'quadIn'}).call(()=>n.destroy()).start();this.floatText('+'+amount,x+12,y-10,GOLD,16);}
  /** 试炼之塔 settlement: first clear pays the floor reward, a loss uses one of today's tries; climb on or go home */
  private towerResult(L:Node,r:BattleResult){const ui=this.ui,f=this.towerFloor,player=new PlayerModel(sys.localStorage);player.markSeen(Array.from(this.met));
-  const b=player.finishTower(f,r.win);player.save();const left=player.towerTries();
+  const b=player.finishTower(f,r.win);player.save();if(r.win&&b&&Object.keys(b).length)towerRank(player.towerBest,player.name); /* new best floor -> leaderboard */const left=player.towerTries();
   ui.label(L,r.win?(b&&Object.keys(b).length?`首次通关 ${f}层　金币 +${b.coins}　食物 +${b.food}`:`${f}层已通关过，没有首通奖励`):`今天还剩 ${left} 次挑战机会`,270,500,340,26,16,true,C.red);
   const climb=(n:number)=>{(globalThis as any).__towerFloor=n;director.loadScene('Battle');},home=()=>{(globalThis as any).__towerFloor=0;director.loadScene('Home');};
   if(r.win)ui.button(L,'next',`挑战 ${f+1}层`,180,560,170,50,()=>climb(f+1),C.red,18);else if(left>0)ui.button(L,'again',`再试一次 (剩${left}次)`,180,560,170,50,()=>climb(f),C.red,16);
-  ui.button(L,'camp','返回主城',r.win||left>0?380:270,560,150,50,home,C.paper,18);this.cheer(r);if(r.win)this.shareBtn(L,`我在《萌宠守卫战》试炼之塔爬到了第 ${f} 层，你能到几层？`);}
+  else if(Ads.available('tower')&&player.adLeft('tower')>0)ui.button(L,'adtry','看广告 再试一次',180,560,170,50,()=>{this.setText('adtry','广告播放中…');Ads.rewarded('tower').then(ok=>{const p2=new PlayerModel(sys.localStorage);if(ok&&p2.adTowerTry()){p2.save();climb(f);}else this.setText('adtry',ok?'今日次数已用完':'广告没有看完');});},GOLD,16);
+  ui.button(L,'camp','返回主城',r.win||left>0?380:270,560,150,50,home,C.paper,18);this.cheer(r);if(r.win)this.shareBtn(L,`我在《灵爪守望》试炼之塔爬到了第 ${f} 层，你能到几层？`);}
  /** 分享战绩 (no reward: WeChat forbids rewarded sharing) */
- private shareBtn(L:Node,title:string){this.ui.button(L,'share','分享战绩',270,618,150,40,()=>{if(!shareNow(title))this.say('在微信里打开才能分享',1.4);},C.paper,15);}
+ private shareBtn(L:Node,title:string){if(!canShare())return;this.ui.button(L,'share','分享战绩',270,676,150,40,()=>{if(!shareNow(title))this.say('在微信里打开才能分享',1.4);},C.paper,15);}
  private showResult(){if(this.resultLayer)return;const r=this.battle.result!,ui=this.ui,L=ui.node(this.hud,'Result',270,480,540,960);this.resultLayer=L;
   ui.rect(L,'Dim',270,480,540,960,new Color(31,32,27,150),false);ui.frame(L,'Box',270,450,380,360,'panel');
   ui.label(L,r.win?'胜利！':'核心失守',270,320,300,50,36,true,r.win?C.red:C.ink);
@@ -403,13 +416,16 @@ export class BattleSlice extends Component {
   if(this.towerFloor){this.towerResult(L,r);return;}
   // account rewards (局外): coins from stars and kills, plus food and captain xp
   const player=new PlayerModel(sys.localStorage);player.markSeen(Array.from(this.met));if(this.guide&&!player.guide.includes('battle'))player.guide.push('battle');this.guide?.hide();const reward=player.applyBattle(r);player.save();
-  ui.label(L,`奖励　金币 +${reward.coins}　食物 +${reward.food}　经验 +${reward.xp}`,270,500,340,26,16,true,C.red);
+  const rl=ui.label(L,`奖励　金币 +${reward.coins}　食物 +${reward.food}　经验 +${reward.xp}`,270,500,340,26,16,true,C.red);
+  // 看广告结算翻倍 (capped per day in PlayerModel.useAd)
+  if(Ads.available('battle2x')&&player.adLeft('battle2x')>0&&reward.coins>0){const btn=ui.button(L,'ad2x',`看广告 奖励翻倍（今日剩 ${player.adLeft('battle2x')} 次）`,270,610,300,40,()=>{this.setText('ad2x','广告播放中…');
+   Ads.rewarded('battle2x').then(ok=>{const p2=new PlayerModel(sys.localStorage);const b=ok?p2.adDoubleBattle(reward):null;if(b){p2.save();rl.string=`奖励　金币 +${reward.coins*2}　食物 +${reward.food*2}　经验 +${reward.xp}（已翻倍）`;btn.active=false;}else this.setText('ad2x',ok?'今日次数已用完':'广告没有看完，奖励未翻倍');});},GOLD,15);}
   const go=(stage:number)=>{const p=new PlayerModel(sys.localStorage);p.selectStage(stage);if(!p.startBattle()){this.say('体力不足，回主城休息一下',1.6);return;}p.save();director.loadScene('Battle');};
   const next=player.nextStageOpen&&r.win;
   ui.button(L,'again',`再战 (体力${STAMINA.battleCost})`,next?112:180,560,next?136:160,50,()=>go(player.stage),next?C.paper:C.red,16);
   if(next)ui.button(L,'next',`下一关 ${STAGES[player.stage+1].name}`,270,560,126,50,()=>go(player.stage+1),C.red,16);
   ui.button(L,'camp','返回主城',next?428:360,560,next?112:150,50,()=>director.loadScene('Home'),C.paper,next?16:20);
-  this.cheer(r);if(r.win)this.shareBtn(L,`我在《萌宠守卫战》${this.battle.stage.chapterName} ${this.battle.stage.name} 拿到了 ${r.stars} 星，来比比？`);}
+  this.cheer(r);if(r.win)this.shareBtn(L,`我在《灵爪守望》${this.battle.stage.chapterName} ${this.battle.stage.name} 拿到了 ${r.stars} 星，来比比？`);}
  private cheer(r:BattleResult){
   for(const p of this.battle.pets){const v=this.views.get(p.id);if(v&&p.state!=='dead'){v.anim='';this.play(v,r.win?'happy':'hit',true);v.skel.setAnimation(1,r.win?'face-happy':'face-alert',true);}}}
 }

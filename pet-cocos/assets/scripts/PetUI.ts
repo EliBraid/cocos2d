@@ -241,7 +241,7 @@ export class PetUI{
  private startLevelFx(kind:string,before:Record<string,number>){this.lvFx={kind,before,t:0};this.parts=[];for(let i=0;i<46;i++){const a=Math.random()*Math.PI*2,v=70+Math.random()*130;this.parts.push({x:(Math.random()-.5)*110,y:(Math.random()-.5)*120,vx:Math.cos(a)*v*.5,vy:-Math.abs(Math.sin(a))*v-30,life:.8+Math.random()*.9,c:i%3===0?col([255,240,150]):i%3===1?col([120,230,150]):col([255,200,90])});}}
  private bounce(){const n=this.portrait;if(n&&n.isValid){n.setScale(.9,.9,1);tween(n).to(.14,{scale:new Vec3(1.1,1.1,1)}).to(.2,{scale:new Vec3(1,1,1)},{easing:'backOut'}).start();}}
  update(dt:number){const f=this.lvFx;if(!f)return;f.t+=dt;
-  const g=this.fxG;if(g&&g.node.isValid){g.clear();for(const q of this.parts){q.life-=dt;q.x+=q.vx*dt;q.y+=q.vy*dt;q.vy+=150*dt;if(q.life<=0)continue;g.fillColor=new Color(q.c.r,q.c.g,q.c.b,Math.max(0,Math.min(255,q.life*400)));g.circle(q.x,q.y,2.5+q.life*3);g.fill();}}
+  const g=this.fxG;if(g&&g.node?.isValid){g.clear();for(const q of this.parts){q.life-=dt;q.x+=q.vx*dt;q.y+=q.vy*dt;q.vy+=150*dt;if(q.life<=0)continue;g.fillColor=new Color(q.c.r,q.c.g,q.c.b,Math.max(0,Math.min(255,q.life*400)));g.circle(q.x,q.y,2.5+q.life*3);g.fill();}}
   const b=this.banner;if(b&&b.isValid){const op=b.getComponent(UIOpacity);if(op)op.opacity=Math.round(255*Math.max(0,Math.min(1,(2.4-f.t)*2.5,f.t*8)));b.setPosition(b.position.x,b.position.y+dt*8,0);}
   if(f.t>3){this.lvFx=null;for(const n of this.deltaNodes)if(n.isValid)n.destroy();this.deltaNodes=[];this.banner=null;}}
 }

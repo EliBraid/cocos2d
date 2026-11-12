@@ -6,6 +6,7 @@ import fs from 'node:fs';import path from 'node:path';import crypto from 'node:c
 const SRC='art-gen',RES='assets/resources';
 const jobs=[
  {src:'login-keyart',out:'home/login-keyart.jpg',w:720,h:1280},
+ {src:'title-logo',out:'home/title-logo.png',w:640,h:216,cutout:true},
  {src:'portal',out:'battle/portal-ring.png',w:256,h:160,cutout:true},
  ...[1,2,3,4,5,6,7,8].map(n=>({src:`stage-ch${n}`,out:`stages/ch${n}.jpg`,w:384,h:240})),
  ...['W01','W04','G01','G02','R01','R02','M01','M02','S01','S02',...Array.from({length:20},(_,i)=>'N'+String(i+1).padStart(2,'0'))].map(id=>({src:`pet-${id}`,out:`pets/portrait/${id}.png`,w:384,h:384,cutout:true})),

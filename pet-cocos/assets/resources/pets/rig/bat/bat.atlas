@@ -4,19 +4,13 @@ format: RGBA8888
 filter: Linear, Linear
 repeat: none
 pma: false
-head
-bounds: 4, 4, 266, 208
-arm-near
-bounds: 274, 4, 110, 157
 body
-bounds: 4, 216, 211, 142
-leg-far
-bounds: 219, 216, 65, 138
-leg-near
-bounds: 288, 216, 62, 138
-arm-far
-bounds: 354, 216, 99, 129
-ear-near
-bounds: 4, 362, 97, 116
-ear-far
-bounds: 105, 362, 87, 106
+bounds: 4, 4, 250, 234
+wing-near
+bounds: 258, 4, 219, 147
+wing-far
+bounds: 4, 242, 211, 147
+item
+bounds: 219, 242, 92, 104
+feet
+bounds: 315, 242, 105, 80

@@ -5,18 +5,18 @@ filter: Linear, Linear
 repeat: none
 pma: false
 head
-bounds: 4, 4, 246, 240
+bounds: 4, 4, 259, 240
 sword
-bounds: 254, 4, 126, 207
+bounds: 267, 4, 115, 207
 tail
-bounds: 384, 4, 230, 192
+bounds: 386, 4, 218, 198
 body
-bounds: 618, 4, 211, 166
-arm-near
-bounds: 833, 4, 99, 150
-arm-far
-bounds: 4, 248, 91, 147
+bounds: 608, 4, 211, 195
 leg-far
-bounds: 99, 248, 48, 138
+bounds: 823, 4, 56, 138
 leg-near
-bounds: 151, 248, 54, 138
+bounds: 883, 4, 57, 138
+arm-near
+bounds: 4, 248, 82, 112
+arm-far
+bounds: 90, 248, 86, 110

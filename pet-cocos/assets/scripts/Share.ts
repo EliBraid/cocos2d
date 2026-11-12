@@ -6,5 +6,7 @@ export function initShare(){const wx=(globalThis as any).wx;if(!wx?.showShareMen
  try{wx.showShareMenu({withShareTicket:false,menus:['shareAppMessage','shareTimeline']});
   wx.onShareAppMessage?.(()=>({title:last||TITLES[Math.floor(Math.random()*TITLES.length)]}));
   wx.onShareTimeline?.(()=>({title:last||TITLES[0]}));}catch{}}
+/** whether this runtime can share at all */
+export function canShare(){return !!(globalThis as any).wx?.shareAppMessage;}
 /** share now with a custom title; returns false when not running inside WeChat */
 export function shareNow(title:string){const wx=(globalThis as any).wx;last=title;if(!wx?.shareAppMessage)return false;try{wx.shareAppMessage({title});return true;}catch{return false;}}

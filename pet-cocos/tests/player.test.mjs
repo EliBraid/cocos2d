@@ -98,3 +98,9 @@ test('限时活动: weekend coins, Wednesday half-price hatching, Friday extra t
  const p=new PlayerModel(undefined,mon);assert.equal(p.hatchCost(wed),Math.ceil(HATCH.cost/2));p.stageStars[0]=1;p.selectStage(0);
  const a=p.applyBattle({win:true,stars:3,kills:40,goldEarned:0,time:1},Math.random,mon).coins,b=p.applyBattle({win:true,stars:3,kills:40,goldEarned:0,time:1},Math.random,sat).coins;assert.equal(b,Math.round(a*1.5));
  p.stageStars[15]=1;assert.equal(p.towerTries(fri),5);});
+test('一键领取: daily tasks, activity chests and achievements in one go',()=>{const t=new Date(2026,10,2,10).getTime();const p=new PlayerModel(undefined,t);
+ p.track('battle',1,t);p.track('win',1,t);p.track('kill',200,t);const c=p.coins;const r=p.claimAllTasks(t);assert.ok(r.pts>0);assert.ok(r.n>0);assert.ok(p.coins>=c);assert.equal(p.claimAllTasks(t).pts,0,'nothing left the second time');});
+test('激励视频: each placement pays only up to its daily cap',()=>{const t=new Date(2026,10,2,10).getTime();const p=new PlayerModel(undefined,t);
+ const r={coins:100,food:3,xp:10,captainLevelUp:false};let n=0;while(p.adDoubleBattle(r,t))n++;assert.equal(n,5);assert.equal(p.adLeft('battle2x',t),0);assert.equal(p.adLeft('battle2x',t+86400e3),5,'resets next day');
+ const f=p.food;assert.ok(p.adHatch(Math.random,t));assert.equal(p.food,f,'ad hatch costs no food');
+ p.stageStars[15]=1;for(let i=0;i<3;i++)p.finishTower(2,false,t);assert.equal(p.towerTries(t),0);assert.ok(p.adTowerTry(t));assert.equal(p.towerTries(t),1);assert.equal(p.adTowerTry(t),false);});

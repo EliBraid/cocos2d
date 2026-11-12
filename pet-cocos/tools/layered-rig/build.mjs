@@ -12,6 +12,16 @@ const ANCHOR={head:[.5,1],body:[.5,.5],tail:[1,1],'ear-far':[.5,1],'ear-near':[.
 const GROW={head:1.08,body:1.06,tail:1.04,'leg-far':1.04,'leg-near':1.04};
 // a part keeps the size it was painted at (relative to the template), clamped around the fox part's size:
 // tails may stay tiny (bear, turtle), arms may be big wings (bat), the torso may be a wide shell (turtle)
+// per-pet size multipliers on top of the fit, for bodies that are not fox-shaped (checked against the portraits)
+const SIZE={seal:{'leg-far':1.55,'leg-near':1.55,tail:.85},turtle:{tail:1.3,'leg-far':1.1,'leg-near':1.1},owl:{tail:.55},squirrel:{tail:1.35},hedgehog:{tail:.95},bat:{'arm-far':1.9,'arm-near':1.7},
+ butterfly:{tail:.85},stardragon:{tail:.85},octopus:{'arm-far':1.2,'arm-near':1.2,'leg-far':1.15,'leg-near':1.15},dog:{tail:.7},bear:{tail:.6}};
+// per-pet nudges (fox canvas px) for parts that sit elsewhere on the body: butterfly wings go behind the back, not at the hip
+const RIGID_TAIL=new Set(['turtle']);
+// parts Codex painted facing left are mirrored so the face looks the same way as the body (+x)
+const MIRROR={seal:['head','tail']};
+// pets with cream / near-white areas reachable through broken outlines (whiskers): only grey-free pure white is background
+const STRICT_BG=new Set(['seal']);
+const OFFSET={seal:{head:[0,-52],body:[0,-30],tail:[0,-20]},butterfly:{tail:[95,-150]},turtle:{tail:[135,-95]}}; // turtle: the stone shell rides on its back
 const RANGE={tail:[0,1.05],'arm-far':[.85,1.7],'arm-near':[.85,1.7],body:[.85,1.45],prop:[.7,1.3]},DEF_RANGE=[.88,1.12];
 
 // cut one cell: drop the near-white background (flood fill from the cell border), keep the big blobs, trim
@@ -21,7 +31,7 @@ async function cutCell(sheet,[cx,cy,cw,ch]){
  const {data}=await sharp(sheet.buf).extract({left,top,width:W,height:H}).ensureAlpha().raw().toBuffer({resolveWithObject:true});
  const white=i=>Math.min(data[i],data[i+1],data[i+2]);const bg=new Uint8Array(W*H),stack=[];
  for(let x=0;x<W;x++)stack.push(x,0,x,H-1);for(let y=0;y<H;y++)stack.push(0,y,W-1,y);
- while(stack.length){const y=stack.pop(),x=stack.pop();if(x<0||y<0||x>=W||y>=H)continue;const k=y*W+x;if(bg[k])continue;const w=white(k*4);if(w<215)continue;bg[k]=1;stack.push(x+1,y,x-1,y,x,y+1,x,y-1);}
+ while(stack.length){const y=stack.pop(),x=stack.pop();if(x<0||y<0||x>=W||y>=H)continue;const k=y*W+x;if(bg[k])continue;const i4=k*4,w=white(i4);if(w<215||(STRICT_BG.has(kind)&&(w<232||Math.max(data[i4],data[i4+1],data[i4+2])-w>10)))continue;bg[k]=1;stack.push(x+1,y,x-1,y,x,y+1,x,y-1);}
  // connected components of the foreground; small specks (stray hatching, frame bits) are dropped
  const lab=new Int32Array(W*H).fill(-1),sizes=[];
  for(let s=0;s<W*H;s++){if(bg[s]||lab[s]>=0)continue;const id=sizes.length;let n=0;const st=[s];lab[s]=id;
@@ -38,10 +48,11 @@ async function cutCell(sheet,[cx,cy,cw,ch]){
 const sheet={buf:fs.readFileSync(sheetFile)};sheet.info=await sharp(sheet.buf).metadata();
 const images={};
 for(const [name,P] of Object.entries(T.parts)){const cut=await cutCell(sheet,P.cell);if(!cut)continue;
- const [bx,by,bw,bh]=P.canvas,g=GROW[name]||1,fit=Math.min(bw*g/cut.w,bh*g/cut.h),painted=T.sheet[0]/sheet.info.width/T.scale;
- const [lo,hi]=RANGE[name]||DEF_RANGE,k=Math.max(fit*lo,Math.min(fit*hi,painted)),w=Math.round(cut.w*k),h=Math.round(cut.h*k);
- const [ax,ay]=ANCHOR[name],left=bx+(bw-w)*ax,top=by+(bh-h)*ay;
- const buf=await sharp(cut.raw,{raw:{width:cut.w,height:cut.h,channels:4}}).resize(w,h,{kernel:'lanczos3'}).png().toBuffer();
+ // tails (and arms painted as wide wings) are matched by area, not squeezed into the fox's wide box (a squirrel's S-tail is tall); everything else fits its box
+ const [bx,by,bw,bh]=P.canvas,g=GROW[name]||1,fit=name==='tail'||(name.startsWith('arm')&&cut.w/cut.h>1.6*bw/bh)?Math.min(Math.sqrt(bw*bh/(cut.w*cut.h)),1.8*bh/cut.h)*g:Math.min(bw*g/cut.w,bh*g/cut.h),painted=T.sheet[0]/sheet.info.width/T.scale;
+ const [lo,hi]=RANGE[name]||DEF_RANGE,k=Math.max(fit*lo,Math.min(fit*hi,painted))*(SIZE[kind]?.[name]??1),w=Math.round(cut.w*k),h=Math.round(cut.h*k);
+ const [ax,ay]=ANCHOR[name],[ox,oy]=OFFSET[kind]?.[name]||[0,0],left=bx+(bw-w)*ax+ox,top=by+(bh-h)*ay+oy;
+ const buf=await sharp(cut.raw,{raw:{width:cut.w,height:cut.h,channels:4}}).flop(!!MIRROR[kind]?.includes(name)).resize(w,h,{kernel:'lanczos3'}).png().toBuffer();
  images[name==='prop'?'sword':name]={buf,left,top,w,h,pw:w,ph:h};}
 
 // ears: the repainted head is rarely the fox's shape, so seat each ear on the painted head's real top edge
@@ -84,7 +95,8 @@ const has=n=>!!images[n],att={front:{},'sword-front':{}};
 const put=(skin,slot,key,a)=>{(att[skin][slot]??={})[key]=a;};
 if(has('leg-far'))put('front','leg-left','leg',mesh('leg-far',2,8,leg('left')));if(has('leg-near'))put('front','leg-right','leg',mesh('leg-near',2,8,leg('right')));
 if(has('arm-far'))put('front','arm-left','arm',region('arm-far','arm-left'));if(has('arm-near'))put('front','arm-right','arm',region('arm-near','arm-right'));
-if(has('tail'))put('front','tail','tail',mesh('tail',10,10,chain(['tail','tail-mid','tail-mid2','tail-tip'])));
+// a rigid back piece (turtle shell) follows the torso instead of bending along the tail chain
+if(has('tail'))put('front','tail','tail',mesh('tail',10,10,RIGID_TAIL.has(kind)?()=>[['back-btm',1]]:chain(['tail','tail-mid','tail-mid2','tail-tip'])));
 if(has('body'))put('front','body','body',region('body','back-btm'));if(has('head'))put('front','head','head',region('head','head'));
 if(has('ear-far'))put('front','ear-left','ear',region('ear-far','ear-left'));if(has('ear-near'))put('front','ear-right','ear',region('ear-near','ear-right'));
 if(has('sword'))put('sword-front','weapon','sword',region('sword','weapon'));

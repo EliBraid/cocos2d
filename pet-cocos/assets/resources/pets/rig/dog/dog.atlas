@@ -6,16 +6,16 @@ repeat: none
 pma: false
 head
 bounds: 4, 4, 259, 228
-tail
-bounds: 267, 4, 188, 204
 sword
-bounds: 459, 4, 124, 173
+bounds: 267, 4, 124, 173
 body
-bounds: 587, 4, 211, 156
+bounds: 395, 4, 211, 156
+tail
+bounds: 610, 4, 131, 143
 ear-near
-bounds: 802, 4, 104, 115
+bounds: 745, 4, 104, 115
 arm-far
-bounds: 910, 4, 93, 113
+bounds: 853, 4, 93, 113
 arm-near
 bounds: 4, 236, 92, 113
 leg-near

@@ -6,7 +6,7 @@ import type {PetMods,PetSkill} from '../battle/BattleConfig';
 import {GRADES,EQUIP_SLOTS,SETS,STAT_KEYS,FORGE,emptyMats,rollItem,rollQuality,itemMods,setMods,talentMods,dismantleYield,battleDrops,gemDrops,slotDef,addMods,itemPower,parseGem,gemKey,gemDef,GEM_COMBINE,GEM_MAX,sockets,applySkillAlt,skillAlts,skillUnlocked,ENHANCE,itemSkillDef,rollItemSkills,seeded,enhanceRate,breakChance,enhanceCost,protectCost,JARS,JAR_TEN,jarDef,rollJarQuality} from './Gear';
 import {CAPTAIN,MERGE,mergeRate,captainBonus,staminaMaxFor,startGoldFor,ranchSlotsFor,ROAD} from './Growth';
 import type {Item,Affix,SlotId,Mats,MatId} from './Gear';
-import {dayKey,hourOf,signReward,NEWBIE_GOALS,ONLINE,SUPPLY,AD_STAMINA,CODES,DAILY,CHESTS,ACH,MAILS,CODEX_PET_REWARD,CODEX_MON_REWARD,CODEX_MILESTONES} from './Welfare';
+import {dayKey,hourOf,signReward,NEWBIE_GOALS,AD_CAPS,mergeBundles,ONLINE,SUPPLY,AD_STAMINA,CODES,DAILY,CHESTS,ACH,MAILS,CODEX_PET_REWARD,CODEX_MON_REWARD,CODEX_MILESTONES} from './Welfare';
 import type {Bundle,DailyKey,AchStat,GoalDef} from './Welfare';
 import {eventMod} from './Events';
 export interface PetInst{id:number;kind:string;grade:number}
@@ -43,9 +43,11 @@ export class PlayerModel{
  ranch:number[]=[];ranchAt=0;ranchBank={coins:0,food:0};
  gems:Record<string,number>={ruby1:2,emerald1:2};skillPick:Record<string,number>={};mergePity:Record<string,number>={};roadClaimed=0;
  // 福利 / 任务 / 邮件 / 图鉴
- signCount=0;signDay=0;daily={day:0,c:{} as Record<string,number>,done:[] as string[],chests:[] as number[],online:0,onlineGot:[] as number[],supply:[] as number[],ads:0,free:0};
+ signCount=0;signDay=0;daily={day:0,c:{} as Record<string,number>,done:[] as string[],chests:[] as number[],online:0,onlineGot:[] as number[],supply:[] as number[],ads:0,free:0,adc:{} as Record<string,number>};
  ach:Record<string,number>={};mails:{id:string;at:number;read:boolean;got:boolean}[]=[];codes:string[]=[];seenMon:string[]=[];codex:string[]=[];hatchLog:{kind:string;grade:number;at:number}[]=[];readonly layout=8;mergeCount=0;jarPity:Record<string,number>={};jarCount=0;
  private store?:Storage;
+ /** set by Cloud.ts: called with every saved JSON so it can be uploaded */
+ static onSaved:((json:string,at:number)=>void)|null=null;
  // 新手七日目标: when the account was made, and which goals / day chests were claimed
  born=0;newbie:string[]=[];
  /** 新手引导 steps already done ('battle' = the guided first battle) */
@@ -62,7 +64,7 @@ export class PlayerModel{
    this.loadGear(s,now);
   }catch{/* unreadable save: start fresh */}
   this.regen(now);}
- save(){if(!this.store)return;const {name,captainLevel,captainXp,coins,food,stamina,staminaAt,agreed,stats,claimed,mailClaimed,bestStars,lastReward,petLevels,deck,owned,hatchCount,hatchSinceRare,stageStars,stage,captain,trainAt,insts,nextInst,mainId,items,nextItem,equip,mats,forgeCount,forgeSince,ranch,ranchAt,ranchBank,gems,skillPick,mergePity,roadClaimed,layout,signCount,signDay,daily,ach,mails,codes,seenMon,codex,hatchLog,mergeCount,jarPity,jarCount,born,newbie,guide,towerBest,towerDay,towerUsed}=this;try{this.store.setItem(SAVE_KEY,JSON.stringify({version:1,name,captainLevel,captainXp,coins,food,stamina,staminaAt,agreed,stats,claimed,mailClaimed,bestStars,lastReward,petLevels,deck,owned,hatchCount,hatchSinceRare,stageStars,stage,captain,trainAt,insts,nextInst,mainId,items,nextItem,equip,mats,forgeCount,forgeSince,ranch,ranchAt,ranchBank,gems,skillPick,mergePity,roadClaimed,layout,signCount,signDay,daily,ach,mails,codes,seenMon,codex,hatchLog,mergeCount,jarPity,jarCount,born,newbie,guide,towerBest,towerDay,towerUsed}));}catch{}}
+ save(){if(!this.store)return;const {name,captainLevel,captainXp,coins,food,stamina,staminaAt,agreed,stats,claimed,mailClaimed,bestStars,lastReward,petLevels,deck,owned,hatchCount,hatchSinceRare,stageStars,stage,captain,trainAt,insts,nextInst,mainId,items,nextItem,equip,mats,forgeCount,forgeSince,ranch,ranchAt,ranchBank,gems,skillPick,mergePity,roadClaimed,layout,signCount,signDay,daily,ach,mails,codes,seenMon,codex,hatchLog,mergeCount,jarPity,jarCount,born,newbie,guide,towerBest,towerDay,towerUsed}=this;const savedAt=Date.now();let json='';try{this.store.setItem(SAVE_KEY,json=JSON.stringify({version:1,savedAt,name,captainLevel,captainXp,coins,food,stamina,staminaAt,agreed,stats,claimed,mailClaimed,bestStars,lastReward,petLevels,deck,owned,hatchCount,hatchSinceRare,stageStars,stage,captain,trainAt,insts,nextInst,mainId,items,nextItem,equip,mats,forgeCount,forgeSince,ranch,ranchAt,ranchBank,gems,skillPick,mergePity,roadClaimed,layout,signCount,signDay,daily,ach,mails,codes,seenMon,codex,hatchLog,mergeCount,jarPity,jarCount,born,newbie,guide,towerBest,towerDay,towerUsed}));}catch{}if(json)PlayerModel.onSaved?.(json,savedAt);}
  private readMats(o:any):Mats{const m=emptyMats();for(const k of Object.keys(m) as MatId[])m[k]=finite(o?.[k],0,0,1e6);return m;}
  private readGems(o:any):Record<string,number>{const out:Record<string,number>={};if(o&&typeof o==='object')for(const k of Object.keys(o)){const g=parseGem(k);if(g)out[k]=finite(o[k],0,0,9999);}return out;}
  private initInsts(){this.insts=[];this.mainId={};this.nextInst=1;for(const k of this.owned){const id=this.nextInst++;this.insts.push({id,kind:k,grade:0});this.mainId[k]=id;}}
@@ -92,6 +94,27 @@ export class PlayerModel{
  applyBattle(o:BattleOutcome,rand:()=>number=Math.random,now=Date.now()):Reward{const drops=battleDrops(STAGES[this.stage].chapter,o.stars,o.win,!!STAGES[this.stage].boss,rand);for(const k of Object.keys(drops) as MatId[])this.mats[k]+=drops[k];const gd=gemDrops(STAGES[this.stage].chapter,o.stars,o.win,!!STAGES[this.stage].boss,rand);for(const k of Object.keys(gd))this.gems[k]=(this.gems[k]||0)+gd[k];const sc=STAGES[this.stage].rewardScale,coins=Math.round((60+o.stars*40+Math.min(o.kills,60))*sc*eventMod('coins',now)),food=o.win?2+o.stars:1,xp=Math.round(20+o.stars*15+Math.min(o.kills,40)/2);
   this.coins+=coins;this.food+=food;const up=this.addXp(xp);this.stats.battles++;this.stats.kills+=o.kills;if(o.win)this.stats.wins++;if(o.stars>=3)this.stats.threeStars++;this.track('battle');this.track('kill',o.kills);if(o.win)this.track('win');if(o.stars>=3)this.track('star3');this.bestStars=Math.max(this.bestStars,o.stars);this.stageStars[this.stage]=Math.max(this.stageStars[this.stage],o.stars);
   this.lastReward={coins,food,xp,captainLevelUp:up,mats:drops,gems:gd};return this.lastReward;}
+ // ------------------------------------------------------------ 激励视频
+ adLeft(k:string,now=Date.now()){this.rollDay(now);return Math.max(0,(AD_CAPS[k]||0)-(this.daily.adc[k]||0));}
+ /** count one watched ad for a placement; false when today's cap is used up */
+ useAd(k:string,now=Date.now()){if(this.adLeft(k,now)<=0)return false;this.daily.adc[k]=(this.daily.adc[k]||0)+1;return true;}
+ /** 结算翻倍: pays the last battle's coins and food once more */
+ adDoubleBattle(r:Reward,now=Date.now()){if(!this.useAd('battle2x',now))return null;this.coins+=r.coins;this.food+=r.food;return {coins:r.coins,food:r.food} as Bundle;}
+ /** 训练场双倍收取 */
+ adDoubleTrain(now=Date.now()){if(this.trainPending(now).coins<=0||!this.useAd('train2x',now))return null;const p=this.collectTrain(now);if(!p)return null;this.coins+=p.coins;this.food+=p.food;return {coins:p.coins*2,food:p.food*2} as Bundle;}
+ /** 看广告免费孵化 */
+ adHatch(rand:()=>number=Math.random,now=Date.now()){if(!this.useAd('hatch',now))return null;this.food+=this.hatchCost(now);return this.hatch(rand,false,now);}
+ /** 试炼之塔 看广告加一次挑战 */
+ adTowerTry(now=Date.now()){this.towerTries(now);if(this.towerUsed<=0||!this.useAd('tower',now))return false;this.towerUsed--;return true;}
+ /** 签到翻倍 (pets are not doubled) */
+ adDoubleSign(now=Date.now()){if(!this.signedToday(now)||!this.useAd('sign2x',now))return null;const {pet,...b}=signReward(this.signCount-1);this.grant(b);return b as Bundle;}
+ // ------------------------------------------------------------ 一键领取
+ /** every ready daily task, activity chest and achievement tier; returns the merged reward and activity points */
+ claimAllTasks(now=Date.now()){let pts=0;const got:Bundle[]=[];
+  for(const t of DAILY)pts+=this.claimDaily(t.id,now)||0;CHESTS.forEach((_,i)=>{const b=this.claimChest(i,now);if(b)got.push(b);});
+  for(const a of ACH){let b;while((b=this.claimAch(a.id)))got.push(b);}return {pts,b:mergeBundles(got),n:got.length+(pts?1:0)};}
+ claimAllOnline(now=Date.now()){const got:Bundle[]=[];ONLINE.forEach((_,i)=>{const b=this.claimOnline(i,now);if(b)got.push(b);});return got.length?mergeBundles(got):null;}
+ claimAllNewbie(now=Date.now()){const got:Bundle[]=[];for(const d of NEWBIE_GOALS){for(const g of d.goals){const b=this.claimGoal(g.id,now);if(b)got.push(b);}const c=this.claimNewbieChest(d.day,now);if(c)got.push(c);}return got.length?mergeBundles(got):null;}
  // ------------------------------------------------------------ 新手七日目标
  /** 1 on the day the account was made, 2 the next calendar day, ... */
  newbieDay(now=Date.now()){const d=(t:number)=>{const x=new Date(t);return new Date(x.getFullYear(),x.getMonth(),x.getDate()).getTime();};return Math.floor((d(now)-d(this.born))/86400e3+.5)+1;}
@@ -127,7 +150,7 @@ export class PlayerModel{
  // ------------------------------------------------------------ 福利 / 任务 / 邮件 / 图鉴
  private readWelfare(s:any){this.signCount=finite(s.signCount,0,0,1e5);this.signDay=finite(s.signDay,0,0,99999999);const d=s.daily;
   if(d&&typeof d==='object'){const nums=(a:unknown,max:number)=>Array.isArray(a)?a.filter((x:unknown)=>typeof x==='number'&&x>=0&&x<max).map((x:number)=>Math.floor(x)):[];
-   this.daily={day:finite(d.day,0,0,99999999),c:{},done:Array.isArray(d.done)?d.done.filter((x:unknown)=>typeof x==='string'&&DAILY.some(t=>t.id===x)):[],chests:nums(d.chests,CHESTS.length),online:finite(d.online,0,0,86400),onlineGot:nums(d.onlineGot,ONLINE.length),supply:nums(d.supply,SUPPLY.length),ads:finite(d.ads,0,0,99),free:finite(d.free,0,0,1)};
+   this.daily={day:finite(d.day,0,0,99999999),c:{},done:Array.isArray(d.done)?d.done.filter((x:unknown)=>typeof x==='string'&&DAILY.some(t=>t.id===x)):[],chests:nums(d.chests,CHESTS.length),online:finite(d.online,0,0,86400),onlineGot:nums(d.onlineGot,ONLINE.length),supply:nums(d.supply,SUPPLY.length),ads:finite(d.ads,0,0,99),free:finite(d.free,0,0,1),adc:{}};if(d.adc&&typeof d.adc==='object')for(const k of Object.keys(AD_CAPS))this.daily.adc[k]=finite(d.adc[k],0,0,99);
    if(d.c&&typeof d.c==='object')for(const t of DAILY)this.daily.c[t.id]=finite(d.c[t.id],0,0,1e6);}
   if(s.ach&&typeof s.ach==='object')for(const a of ACH)this.ach[a.id]=finite(s.ach[a.id],0,0,a.tiers.length);
   if(Array.isArray(s.mails))this.mails=s.mails.filter((x:any)=>x&&MAILS.some(m=>m.id===x.id)).map((x:any)=>({id:x.id,at:finite(x.at,0,0,1e15),read:!!x.read,got:!!x.got}));
@@ -137,7 +160,7 @@ export class PlayerModel{
  grant(b:Bundle){if(b.coins)this.coins+=b.coins;if(b.food)this.food+=b.food;if(b.stamina)this.stamina=Math.min(999,this.stamina+b.stamina);if(b.xp)this.addXp(b.xp);
   if(b.mats)for(const k of Object.keys(b.mats) as MatId[])this.mats[k]+=b.mats[k]||0;if(b.gems)for(const k of Object.keys(b.gems))if(parseGem(k))this.gems[k]=this.gemCount(k)+b.gems[k];
   if(b.pet&&PETS[b.pet]){const id=this.nextInst++;this.insts.push({id,kind:b.pet,grade:1});if(!this.has(b.pet)){this.owned.push(b.pet);this.mainId[b.pet]=id;}}}
- private rollDay(now=Date.now()){const d=dayKey(now);if(this.daily.day!==d)this.daily={day:d,c:{},done:[],chests:[],online:0,onlineGot:[],supply:[],ads:0,free:0};}
+ private rollDay(now=Date.now()){const d=dayKey(now);if(this.daily.day!==d)this.daily={day:d,c:{},done:[],chests:[],online:0,onlineGot:[],supply:[],ads:0,free:0,adc:{}};}
  /** count progress for today's tasks */
  track(k:DailyKey,n=1,now=Date.now()){this.rollDay(now);this.daily.c[k]=(this.daily.c[k]||0)+n;}
  // 签到

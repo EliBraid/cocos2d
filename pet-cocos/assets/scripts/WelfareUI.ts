@@ -1,4 +1,5 @@
 // 福利中心 (签到 / 在线 / 体力 / 兑换码), 任务 (每日活跃 + 成就) and 邮件.
+import {IS_XHS} from './Platform';
 import {Node,Color,Graphics} from 'cc';
 import {C} from './PaperUI';
 import {PETS} from './battle/BattleConfig';
@@ -16,7 +17,22 @@ const GOAL_GO=(id:string)=>id.startsWith('clear')||id.startsWith('stars')||id.st
 /** text input: WeChat's editable modal, the browser prompt elsewhere */
 export function askText(title:string,placeholder:string):Promise<string|null>{const wx=(globalThis as any).wx;
  if(wx?.showModal)return new Promise(ok=>wx.showModal({title,editable:true,placeholderText:placeholder,success:(r:any)=>ok(r.confirm?String(r.content||''):null),fail:()=>ok(null)}));
+ if(IS_XHS)return domAsk(title,placeholder);
  const pr=(globalThis as any).prompt;return Promise.resolve(typeof pr==='function'?pr(title,''):null);}
+/** a small HTML dialog over the canvas (Xiaohongshu blocks window.prompt) */
+function domAsk(title:string,placeholder:string):Promise<string|null>{const d=(globalThis as any).document;if(!d)return Promise.resolve(null);
+ return new Promise(ok=>{const wrap=d.createElement('div');wrap.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;z-index:9999;background:rgba(31,32,27,.55);display:flex;align-items:center;justify-content:center';
+  const box=d.createElement('div');box.style.cssText='width:80%;max-width:360px;background:#fffaf0;border-radius:14px;padding:18px 16px 14px;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#3a3326';
+  const h=d.createElement('div');h.textContent=title;h.style.cssText='font-size:17px;font-weight:bold;margin-bottom:12px;text-align:center';
+  const input=d.createElement('input');input.type='text';input.placeholder=placeholder;input.maxLength=500;input.style.cssText='width:100%;box-sizing:border-box;font-size:16px;padding:10px;border:1px solid #d9cfb8;border-radius:8px;background:#fff;outline:none';
+  const row=d.createElement('div');row.style.cssText='display:flex;gap:10px;margin-top:14px';
+  const mk=(t:string,bg:string,fg:string)=>{const b=d.createElement('button');b.type='button';b.textContent=t;b.style.cssText=`flex:1;font-size:16px;padding:10px 0;border:0;border-radius:8px;background:${bg};color:${fg}`;return b;};
+  const cancel=mk('取消','#e8e1d0','#3a3326'),okb=mk('确定','#f46f5e','#fff');
+  const done=(v:string|null)=>{if(wrap.parentNode)wrap.parentNode.removeChild(wrap);ok(v);};
+  cancel.addEventListener('click',()=>done(null));okb.addEventListener('click',()=>done(String(input.value||'')));
+  input.addEventListener('keydown',(e:any)=>{if(e.key==='Enter')done(String(input.value||''));});
+  row.appendChild(cancel);row.appendChild(okb);box.appendChild(h);box.appendChild(input);box.appendChild(row);wrap.appendChild(box);d.body.appendChild(wrap);
+  setTimeout(()=>{try{input.focus();}catch{}},50);});}
 export class WelfareUI{
  private k:Kit;private wtab=0;private ttab=0;private mailSel:string|null=null;
  constructor(private h:GearHost,private hub:WelfareHub){this.k=new Kit(h);}
@@ -40,6 +56,7 @@ export class WelfareUI{
  private newbie(p:Node,w:number,y0:number){const m=this.m,k=this.k,ui=this.ui,now=Date.now(),today=Math.min(7,m.newbieDay(now));let y=y0;
   if(!this.nday)this.nday=NEWBIE_GOALS.find(d=>d.day<=today&&(d.goals.some(g=>!m.newbie.includes(g.id))||!m.newbie.includes('chest'+d.day)))?.day||today;
   k.ct(p,'新手七日目标 · 第 7 天宝箱送稀有宠物「小星龙」',w/2,y+12,w-30,20,14,true,C.red);y+=34;
+  if(m.newbiePending(now)>0){k.btn(p,'claim-all-newbie','一键领取',w/2,y+20,220,42,()=>{const b=m.claimAllNewbie(now);if(b){m.save();this.h.refresh();this.openWelfare(this.wtab);this.h.reward('七日目标',{b});}},'gold',16,'check');y+=50;}
   // day selector: future days are locked, a dot marks days with something to claim
   const dw=(w-30)/7;for(const d of NEWBIE_GOALS){const open=d.day<=today,x=15+dw*(d.day-.5),pend=d.goals.some(g=>m.goalReady(g.id,now))||m.newbieChestReady(d.day,now);
    k.btn(p,'nd'+d.day,`第${d.day}天`,x,y+20,dw-4,38,()=>{if(!open){this.h.say(`第 ${d.day} 天开放`,1.2);return;}this.nday=d.day;this.openWelfare(this.wtab);},d.day===this.nday?'gold':open?'cream':'grey',13);if(pend)ui.img(p,'dot',x+dw/2-10,y+4,12);}
@@ -64,11 +81,13 @@ export class WelfareUI{
    if(done){const g=this.ui.node(card,'done',ww/2,ch/2,ww,ch).addComponent(Graphics);g.fillColor=new Color(255,255,255,120);g.roundRect(-ww/2,-ch/2,ww,ch,10);g.fill();this.ui.icon(card,'check',ww-20,ch-20,28);}
    else if(isToday)k.ct(card,'今天',ww/2,ch-14,ww,16,12,true,C.red);}
   y+=ch*2+8+14;
-  if(today)k.ct(p,'今天已经签到啦，明天再来',w/2,y+22,w-40,22,16,true,C.muted);
+  if(today&&Ads.available('sign2x')&&m.adLeft('sign2x',now)>0)k.btn(p,'sign2x','看广告再领一份',w/2,y+24,240,52,()=>{this.h.say('广告播放中…',1.2);Ads.rewarded('sign2x').then(ok=>{if(!ok){this.h.say('广告没有看完，奖励未发放',1.6);return;}const b=m.adDoubleSign();if(b){m.save();this.h.refresh();this.openWelfare(this.wtab);this.h.reward('签到翻倍',{b});}});},'gold',20,'energy');
+  else if(today)k.ct(p,'今天已经签到啦，明天再来',w/2,y+22,w-40,22,16,true,C.muted);
   else k.btn(p,'do-sign','签到',w/2,y+24,220,52,()=>{const b=m.sign();if(b){m.save();this.h.refresh();this.openWelfare(0);this.h.reward(b.pet?'获得新伙伴！':'签到成功',{b,sub:`累计签到 ${m.signCount} 天`});}},'green',22,'check');
   return y+56;}
  private online(p:Node,w:number,y0:number){const m=this.m,k=this.k,now=Date.now(),mins=Math.floor(m.daily.online/60);let y=y0;
   k.ct(p,`今天已在线 ${mins} 分钟　每天 0 点重置`,w/2,y+12,w-30,20,15,true,C.ink);y+=34;
+  if(ONLINE.some((_,i)=>m.onlineReady(i,now))){k.btn(p,'claim-all-online','一键领取',w/2,y+20,220,42,()=>{const b=m.claimAllOnline(now);if(b){m.save();this.h.refresh();this.openWelfare(this.wtab);this.h.reward('在线奖励',{b});}},'gold',16,'check');y+=50;}
   ONLINE.forEach((o,i)=>{const got=m.daily.onlineGot.includes(i),ready=m.onlineReady(i,now),row=this.ui.frame(p,'on'+i,w/2,y+40,w-30,76,ready?'card-gold':'card');
    this.ui.icon(row,'chest',38,38,40);k.lt(row,`在线 ${o.min} 分钟`,66,24,140,20,16,true);this.ui.bar(row,66+70,52,140,10,Math.min(1,m.daily.online/(o.min*60)),ready||got?C.sage:C.cyan);
    this.chips(row,(w-30)/2+70,38,o.b,40);
@@ -79,6 +98,7 @@ export class WelfareUI{
   SUPPLY.forEach((s,i)=>{const st=m.supplyState(i,now),row=this.ui.frame(p,'sp'+i,w/2,y+46,w-30,88,st==='open'?'card-gold':'card');
    this.ui.icon(row,'food',44,44,48);k.lt(row,`${s.name}补给`,84,28,160,22,18,true);k.lt(row,`${String(s.from).padStart(2,'0')}:00 - ${String(s.to).padStart(2,'0')}:00　体力 +${s.stamina}`,84,56,220,18,13,true,C.muted);
    k.btn(row,'spc'+i,st==='done'?'已领':st==='open'?'领取':st==='soon'?'未到时间':'已错过',w-30-56,44,96,40,()=>{const n=m.claimSupply(i);if(n){m.save();this.h.refresh();this.openWelfare(2);this.h.reward(`${s.name}补给`,{b:{stamina:n}});}},st==='open'?'green':'grey',15);y+=96;});
+  if(!Ads.available('stamina'))return y;
   const left=m.adStaminaLeft(now),row=this.ui.frame(p,'ad',w/2,y+46,w-30,88,'card');this.ui.icon(row,'energy',44,44,46);
   k.lt(row,`看广告领体力`,84,28,160,22,18,true);k.lt(row,`每次 +${AD_STAMINA.amount}　今天还剩 ${left}/${AD_STAMINA.perDay} 次`,84,56,220,18,13,true,C.muted);
   k.btn(row,'adst',left?'看广告':'明天再来',w-30-56,44,96,40,()=>{if(!left)return;this.h.say('广告播放中…',1.2);Ads.rewarded('stamina').then(ok=>{if(ok){const n=m.claimAdStamina();m.save();this.h.refresh();this.openWelfare(2);this.h.reward('广告奖励',{b:{stamina:n}});}else{this.h.say('广告没看完，没有奖励',1.4);this.openWelfare(2);}});},left?'red':'grey',15);y+=96;
@@ -92,7 +112,10 @@ export class WelfareUI{
  // ================================================================== 任务
  openTasks(tab=this.ttab){this.ttab=tab;const m=this.m;this.h.modal('任务',(p,w)=>{const now=Date.now();
   this.tabs(p,w,['每日任务','成就'],this.ttab,[DAILY.some(t=>m.dailyReady(t.id,now))||CHESTS.some((_,i)=>m.chestReady(i,now)),ACH.some(a=>m.achReady(a.id))],i=>this.openTasks(i));
-  return (this.ttab===0?this.daily(p,w,112):this.achievements(p,w,112))+14;},W);}
+  const any=this.ttab===0?DAILY.some(t=>m.dailyReady(t.id,now))||CHESTS.some((_,i)=>m.chestReady(i,now)):ACH.some(a=>m.achReady(a.id));let y0=112;
+  if(any){this.k.btn(p,'claim-all-tasks','一键领取',w/2,y0+22,220,44,()=>{const r=m.claimAllTasks(now);m.save();this.h.refresh();this.openTasks(this.ttab);
+   this.h.reward('一键领取',{b:r.b,...(r.pts?{extra:[{icon:'star',label:`活跃+${r.pts}`}]}:{})});},'gold',17,'check');y0+=54;}
+  return (this.ttab===0?this.daily(p,w,y0):this.achievements(p,w,y0))+14;},W);}
  private daily(p:Node,w:number,y0:number){const m=this.m,k=this.k,ui=this.ui,now=Date.now(),act=m.activity(now);let y=y0;
   // activity bar with five chests
   const card=ui.frame(p,'act',w/2,y+50,w-30,100,'card');k.lt(card,`今日活跃度 ${act}`,16,20,200,22,17,true);k.lt(card,'每天 0 点刷新',w-30-110,20,100,18,12,true,C.muted);

@@ -1,0 +1,31 @@
+Tool: built-in image_gen (no fallback CLI).
+
+Background cleanup prompt:
+Perform a background-only cleanup of this finished game title logo. Keep the illustration exactly unchanged: the four characters 灵爪守望 in the same order and same shapes, orange-red and forest-green fills, all cream highlights, dark ink lines, cross-hatching, cream outer stroke, paw and three claw marks, leaves, blue crystal, dimensions, and placement. Replace ALL the almost-white canvas outside the logo, including all corner and edge pixels and small background gaps, with a single flat solid pure white colour RGB(255,255,255), hex #FFFFFF. The canvas must have absolutely no grain, tint, paper texture, shading, noise or grey pixels away from antialiased artwork edges. Keep the entire logo sharp and undamaged. Output a PNG with a flat pure white opaque background, approximately 3:1 wide horizontal. Do not redraw the Chinese lettering, and add nothing.
+
+Initial generation prompt:
+Use case: logo-brand.
+Create the final title-logo PNG for the cute casual pet tower-defense mobile game “灵爪守望”.
+
+Use the two attached images ONLY as style references: the forest camp illustration and the orange fox warrior. Match their hand-drawn doodle illustration style closely: thick dark brown-black hand-inked outlines, lively subtly irregular lines, light cross-hatching, warm saturated flat colours. Do not include the reference scenes or the fox.
+
+The logo must display exactly these FOUR Chinese characters, left to right in ONE horizontal row, large and clearly legible: 灵爪守望
+Character 1: 灵
+Character 2: 爪
+Character 3: 守
+Character 4: 望
+Accurate recognizable Chinese strokes are essential. No substitute glyphs, duplicate characters, or extra text.
+
+Chunky rounded playful brush lettering. “灵爪” is warm orange-red with cream highlights. “守望” is deep forest green with cream highlights. EVERY character has a thick dark brown-black ink outline and a substantial cream outer stroke. Light hand-drawn cross-hatching only within the artwork. Keep internal character counters and strokes readable.
+
+Integrate a small cute paw print with exactly three tiny claw marks above or tucked into the lettering, plus a few leaves and one tiny glowing cyan-blue faceted crystal as small accents. These ornaments must remain secondary to the four characters and must not cover or replace their strokes.
+
+Slightly arched, wide horizontal composition, approximately 3 times wider than tall. Centre the whole logo with generous clear margin on every side. Use a wide landscape canvas, preferably 1536 x 512, to suit the horizontal title. Plain completely flat pure white (#FFFFFF) background. Nothing else. No backdrop texture, scenery, frame, banner, other text, Latin letters, numbers, signature, or watermark.
+
+Final refinement prompt:
+Refine image 1, the title logo. Images 2 and 3 are STYLE REFERENCES ONLY: a forest camp and a fox warrior. Change ONLY the rendering style and green palette of the logo to match their ink-drawn doodle illustration style.
+
+Preserve the exact four Chinese characters 灵爪守望, in that order in a single row. Preserve their recognizable strokes, large legibility, chunky rounded brush forms, slight arch, orange-red 灵爪, green 守望, thick dark brown-black ink outlines and cream outer strokes. Preserve the current paw with three tiny claw marks, leaves, and tiny blue crystal, placement, wide approximately 3:1 composition, and white margins.
+
+Replace the painterly dimensional shading with the flatter warm saturated colour fills and fine visible pen cross-hatching of the reference images. Hand-inked outlines should have subtle organic irregularity. Use deep FOREST GREEN for 守望 instead of the current light yellowish olive green, keeping the cream highlights. Warm orange-red and cream highlights on 灵爪. Avoid glossy paint and raised 3D lettering. Keep all hatching inside the artwork. Plain flat pure #FFFFFF white background with no texture or colour variation. Crisp high-resolution final game title logo, generous clear margins. No scenery or fox. No other text, letters, numbers, signature or watermark.
+

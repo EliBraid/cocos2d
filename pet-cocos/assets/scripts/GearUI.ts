@@ -9,6 +9,7 @@ import {AdventureUI} from './AdventureUI';
 import {CaptainUI} from './CaptainUI';
 import {PETS,JOBS,RARITY} from './battle/BattleConfig';
 import {PlayerModel,HATCH,RANCH,PET_MAX_LEVEL} from './meta/PlayerModel';
+import {Ads} from './Ads';
 import type {HatchResult} from './meta/PlayerModel';
 import {GRADES,gradeColor,EQUIP_SLOTS,SETS,MATS,MAT_COLOR,FORGE,TALENTS,STAT_KEYS,fmtStat,itemName,itemPower,setDef,slotDef,setCounts,gemLabel,itemSkillDef,ENHANCE,SKILL_ROLLS,JARS,JAR_TEN,jarDef,rollJarQuality} from './meta/Gear';
 import type {JarDef} from './meta/Gear';
@@ -146,7 +147,7 @@ export class GearUI{
   const txt={ok:'强化成功！',fail:'失败',drop:'失败 · 降级',break:'碎裂！'}[fx.kind],c={ok:new Color(255,200,60),fail:new Color(150,150,140),drop:new Color(240,140,50),break:new Color(230,70,60)}[fx.kind];
   const l=this.h.bold(n,txt,200,100,360,50,fx.kind==='ok'?36:30,c,C.white,4) as Label;fx.label=l.node;
   if(!fx.parts.length){const k=fx.kind==='ok'?26:fx.kind==='break'?22:0;for(let i=0;i<k;i++){const a=Math.random()*Math.PI*2,v=120+Math.random()*220;fx.parts.push({x:0,y:0,vx:Math.cos(a)*v,vy:Math.sin(a)*v+(fx.kind==='break'?-80:60),c:fx.kind==='ok'?(i%3?new Color(255,214,80):new Color(255,255,255)):new Color(120+Math.random()*60,110,100),s:fx.kind==='break'?6+Math.random()*8:3+Math.random()*4});}}}
- private updateEnhFx(dt:number){const fx=this.enhFx;if(!fx||!fx.g||!fx.g.node.isValid)return;fx.t+=dt;const g=fx.g,t=fx.t;g.clear();
+ private updateEnhFx(dt:number){const fx=this.enhFx;if(!fx||!fx.g||!fx.g.node?.isValid)return;fx.t+=dt;const g=fx.g,t=fx.t;g.clear();
   if(t>1.6){if(fx.label?.isValid)fx.label.active=false;return;}
   const a=Math.max(0,1-t/1.6);
   if(fx.kind==='ok'){g.fillColor=new Color(255,236,150,Math.round(140*Math.max(0,1-t*2)));g.roundRect(-200,-60,400,120,16);g.fill();g.strokeColor=new Color(255,200,60,Math.round(255*a));g.lineWidth=4;g.circle(0,0,40+t*160);g.stroke();}
@@ -205,7 +206,7 @@ export class GearUI{
   this.ui.btn(p,'jback','返回',w/2+160,y+26,90,46,()=>{this.jar=null;this.openWorkshop(3);},'cream',16);
   this.h.tap(this.ui.node(p,'skip',w/2,y-120,w,200),()=>{if(this.jar&&!this.jar.done)this.jar.t+=9;});
   return y+56;}
- private updateJar(dt:number){const J=this.jar;if(!J||J.done||!J.fx||!J.fx.node.isValid)return;J.t+=dt;const g=J.fx;g.clear();
+ private updateJar(dt:number){const J=this.jar;if(!J||J.done||!J.fx||!J.fx.node?.isValid)return;J.t+=dt;const g=J.fx;g.clear();
   if(J.items.length===1){const s=J.strip!,T=2.6,k=Math.min(1,J.t/T),e=1-Math.pow(1-k,3),sp=(s as any).__sp,fin=(s as any).__fin,n=(s as any).__n;
    // icon i sits at local x = (i-n/2)*sp+sp/2 (strip centred); bring icon fin to the centre
    const target=-((fin-n/2)*sp+sp/2);s.setPosition(target*e+(1-e)*(sp*6),0,0);
@@ -301,6 +302,9 @@ export class GearUI{
   if(free)this.ui.btn(p,'hatch1','今日免费',w/2-100,y+28,190,54,()=>pull(1,true),'green',20,'egg');
   else this.ui.btn(p,'hatch1',`单抽　${m.hatchCost()}`,w/2-100,y+28,190,54,()=>pull(1),m.food>=m.hatchCost()?'green':'grey',20,'food');
   this.ui.btn(p,'hatch3',`三连　${m.hatchCost()*3}`,w/2+100,y+28,190,54,()=>pull(3),m.food>=m.hatchCost()*3?'gold':'grey',20,'food');y+=66;
+  // 看广告免费孵化 (a couple a day)
+  if(Ads.available('hatch')&&m.adLeft('hatch')>0){this.ui.btn(p,'hatch-ad',`看广告免费孵化（今日剩 ${m.adLeft('hatch')} 次）`,w/2,y+22,300,42,()=>{if(this.spin&&!this.spin.done)return;this.h.say('广告播放中…',1.2);
+   Ads.rewarded('hatch').then(ok=>{if(!ok){this.h.say('广告没有看完',1.4);return;}const r=m.adHatch();if(r){m.save();this.h.refresh();this.openHatchery([r]);}});},'gold',16,'egg');y+=52;}
   this.ct(p,`现有食物 ${m.food}　已孵化 ${m.hatchCount} 次　再孵 ${Math.max(0,HATCH.pityEvery-m.hatchSinceRare)} 次内必出上品以上`,w/2,y+4,w-24,18,12,true,C.muted);y+=24;
   ['common','fine','rare','epic','legend'].forEach((k,i)=>{const x=w/2+(i-2)*84,c=gradeColor(i);const chip=this.ui.rect(p,'lg'+i,x,y+14,76,26,mix(c,.55),true);this.ct(chip,`${GRADES[i].name} ${pct(HATCH.weights[k])}%`,38,13,76,22,11,true,deep(c,.55));});y+=38;
   this.ct(p,'品级决定宠物的基础强度和天赋数量；同种宠物多出的个体可以去放养所挂机',w/2,y+4,w-24,16,11,false,C.muted);y+=24;
@@ -328,7 +332,7 @@ export class GearUI{
 
  update(dt:number){this.pet.update(dt);this.adv.update(dt);this.updateEnhFx(dt);this.updateJar(dt);const sp=this.spin;if(!sp)return;this.lampT+=dt;
   // marquee lamps
-  const rate=sp.done?2:8,lg=sp.lamps;if(lg&&lg.node.isValid&&Math.floor(this.lampT*rate)!==Math.floor((this.lampT-dt)*rate)){lg.clear();const ph=Math.floor(this.lampT*rate),W=430,Hh=250;
+  const rate=sp.done?2:8,lg=sp.lamps;if(lg&&lg.node?.isValid&&Math.floor(this.lampT*rate)!==Math.floor((this.lampT-dt)*rate)){lg.clear();const ph=Math.floor(this.lampT*rate),W=430,Hh=250;
    for(let i=0;i<14;i++){const x=-W/2+14+i*(W-28)/13;for(const yy of [Hh/2-9,-Hh/2+9]){lg.fillColor=(i+ph)%2?new Color(255,226,120):new Color(150,100,60);lg.circle(x,yy,4);lg.fill();}}}
   if(sp.done&&!sp.parts.length)return;
   sp.t+=dt;let allOpen=true;
@@ -344,7 +348,7 @@ export class GearUI{
      const v=Math.min(1,(f-.14)/.26),e=1+2.7*Math.pow(v-1,3)+1.7*Math.pow(v-1,2);c.setScale(Math.max(0,e),1,1);if(v>=1){c.setScale(1,1,1);r.state='open';}}}}
    if(r.state!=='open')allOpen=false;}
   if(!sp.done&&allOpen){sp.done=true;const res=sp.reels.map(r=>r.res).filter((x):x is HatchResult=>!!x);if(res.length)setTimeout(()=>this.h.reward(res.some(x=>x.grade>=3)?'大成功！':'孵化结果',{pets:res.map(x=>({kind:x.kind,grade:x.grade,tag:x.isNew?'新伙伴加入！':x.upgraded?'品级提升，成为主力':'备用个体 · 可放养/合成',hot:x.isNew||x.upgraded})),sub:res.some(x=>x.isNew)?'有新伙伴加入营地':undefined}),700);}
-  const g=sp.fx;if(g&&g.node.isValid){g.clear();for(const q of sp.parts){q.life-=dt;q.x+=q.vx*dt;q.y+=q.vy*dt;q.vy-=260*dt;g.fillColor=new Color(q.c.r,q.c.g,q.c.b,Math.max(0,Math.min(255,q.life*330)));g.circle(q.x,q.y,3+q.life*4);g.fill();}}
+  const g=sp.fx;if(g&&g.node?.isValid){g.clear();for(const q of sp.parts){q.life-=dt;q.x+=q.vx*dt;q.y+=q.vy*dt;q.vy-=260*dt;g.fillColor=new Color(q.c.r,q.c.g,q.c.b,Math.max(0,Math.min(255,q.life*330)));g.circle(q.x,q.y,3+q.life*4);g.fill();}}
   sp.parts=sp.parts.filter(q=>q.life>0);}
  private burst(sp:Spin,cx:number,grade:number){const c=gradeColor(grade),n=14+grade*8;
   for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,v=90+Math.random()*(120+grade*40);sp.parts.push({x:cx-MW/2,y:0,vx:Math.cos(a)*v,vy:Math.sin(a)*v+60,life:.5+Math.random()*.5,c:i%3===0?new Color(255,236,150,255):col(c)});}}

@@ -19,7 +19,7 @@ export class CaptainUI{
  private get m(){return this.h.model();}
  private get ui(){return this.h.ui;}
  open(tab=this.tab){this.tab=tab;const m=this.m,k=this.k;this.h.modal('队长',(p,w)=>{
-  const card=this.ui.frame(p,'Profile',w/2,114,w-30,92,'card');this.ui.img(card,'avatar-ring',44,46,64);this.h.sprite(card,'battle/ember-avatar',44,44,50,46);
+  const card=this.ui.frame(p,'Profile',w/2,114,w-30,92,'card');this.ui.img(card,'avatar-ring',44,46,64);this.h.sprite(card,'home/avatar-fox',44,46,52,52);
   k.lt(card,m.name,86,20,200,24,19,true,C.ink);const max=m.captainLevel>=CAPTAIN.maxLevel;k.lt(card,`队长 Lv.${m.captainLevel}${max?'（满级）':` / ${CAPTAIN.maxLevel}`}`,86,44,160,18,14,true,C.red);
   this.ui.bar(card,86+95,68,190,12,m.captainProgress,col([76,213,220]));k.lt(card,max?'已满级':`${m.captainXp} / ${PlayerModel.xpToNext(m.captainLevel)} 经验`,86+210,68,100,14,11,true,C.muted);
   k.lt(card,`冒险 ${m.stats.battles} 场　胜利 ${m.stats.wins} 场`,w-30-150,20,140,14,11,true,C.muted);

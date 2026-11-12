@@ -1,7 +1,7 @@
 {
   "platform": "wechatgame",
   "debug": false,
-  "name": "萌宠守卫战",
+  "name": "灵爪守望",
   "outputName": "wechatgame",
   "buildPath": "project://build",
   "startScene": "7f0568be-0d6e-45e0-b42d-0b927b474ff5",
@@ -33,7 +33,7 @@
   ],
   "packages": {
     "wechatgame": {
-      "appid": "touristappid",
+      "appid": "wx9ea25c180c4fa5c2",
       "orientation": "portrait",
       "separateEngine": false,
       "buildOpenDataContextTemplate": false,
@@ -42,5 +42,5 @@
     }
   },
   "sourceMaps": false,
-  "md5Cache": false
+  "md5Cache": true
 }

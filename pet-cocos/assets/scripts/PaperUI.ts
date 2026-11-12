@@ -1,5 +1,6 @@
 import {Node,UITransform,Graphics,Color,Label,HorizontalTextAlignment,VerticalTextAlignment,tween,Vec3,EventTouch,Sprite,SpriteFrame,resources} from 'cc';
 import {UI_SKIN,UI_SKIN_DIR} from './ui/UISkin';
+import {coverFull} from './Screen';
 export const C={ink:new Color(31,32,27),paper:new Color(249,247,236),red:new Color(244,111,94),cyan:new Color(76,213,220),sage:new Color(145,172,128),muted:new Color(118,120,103),line:new Color(210,207,187),white:new Color(255,254,245)};
 export type BtnColor='red'|'cream'|'green'|'gold'|'blue'|'grey';
 // icon names used by older call sites -> drawn icon in the UI kit
@@ -49,7 +50,7 @@ export class PaperUI {
     n.on(Node.EventType.TOUCH_END,(e:EventTouch)=>{e.propagationStopped=true;n.setScale(1,1,1);action();});return n;}
   // ------------------------------------------------------------------ original paper drawing (fallback)
   private paperRect(n:Node,w:number,h:number,fill:Color,border:boolean){const g=n.addComponent(Graphics),a=w/2,b=h/2,k=Math.min(9,w/5,h/5);g.fillColor=fill;g.strokeColor=C.ink;g.lineWidth=2.6;g.moveTo(-a+k,-b);g.lineTo(a-k,-b+.6);g.lineTo(a,-b+k);g.lineTo(a-.7,b-k);g.lineTo(a-k,b);g.lineTo(-a+k,b-.6);g.lineTo(-a,b-k);g.lineTo(-a+.5,-b+k);g.close();g.fill();if(border){g.stroke();g.strokeColor=new Color(58,58,47,100);g.lineWidth=.7;g.moveTo(-a+k,-b+4);g.lineTo(a-k,-b+4);g.stroke();}return g;}
-  rect(parent:Node,name:string,x:number,y:number,w:number,h:number,fill=C.paper,border=true){const n=this.node(parent,name,x,y,w,h);this.paperRect(n,w,h,fill,border);return n;}
+  rect(parent:Node,name:string,x:number,y:number,w:number,h:number,fill=C.paper,border=true){const n=this.node(parent,name,x,y,w,h);this.paperRect(n,w,h,fill,border);if(w===540&&h===960&&x===270&&y===480)coverFull(n);return n;} // full-screen backgrounds and dims reach the screen edges
   button(parent:Node,id:string,value:string,x:number,y:number,w:number,h:number,action:()=>void,fill=C.paper,size=21,icon?:string,plain=false){
     if(!plain&&PaperUI.skinned&&fill.a>0){const k:BtnColor=fill.equals(C.red)?'red':(fill.r<235&&Math.abs(fill.r-fill.g)<12)?'grey':'cream';return this.btn(parent,id,value,x,y,w,h,action,k,size,icon);}
     const n=this.rect(parent,'button:'+id,x,y,w,h,fill,fill.a>0);this.buttons.set(id,n);this.label(n,value,w/2+(icon?13:0),h/2,w-(icon?45:16),h-8,size,true);if(icon)this.icon(n,icon,22,h/2,26);const reset=()=>tween(n).to(.08,{scale:new Vec3(1,1,1)}).start();n.on(Node.EventType.TOUCH_START,()=>tween(n).to(.06,{scale:new Vec3(.97,.97,1)}).start());n.on(Node.EventType.TOUCH_CANCEL,reset);n.on(Node.EventType.TOUCH_END,(e:EventTouch)=>{e.propagationStopped=true;reset();action();});return n;}

@@ -17,6 +17,10 @@ if ($Config -eq 'build-config-wechat.json') {
 & node (Join-Path $PSScriptRoot 'finish-wechat.mjs')
 if ($LASTEXITCODE -ne 0) { throw 'WeChat package check failed.' }
 }
+if ($Config -eq 'build-config-xhs.json') {
+& node (Join-Path $PSScriptRoot 'finish-xhs.mjs')
+if ($LASTEXITCODE -ne 0) { throw 'Xiaohongshu package step failed.' }
+}
 if ($Config -eq 'build-config.json') {
 & node (Join-Path $PSScriptRoot 'finish-build.mjs')
 if ($LASTEXITCODE -ne 0) { throw 'Build postprocessing failed.' }

@@ -4,6 +4,7 @@ build/
 local/
 node_modules/
 build-logs/
+tmp/
 # scratch, backups and bundles of earlier hand-offs
 .tmp-*/
 .backup-*/

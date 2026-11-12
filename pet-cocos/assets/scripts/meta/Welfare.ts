@@ -36,6 +36,8 @@ export const ONLINE:{min:number;b:Bundle}[]=[{min:3,b:{coins:200}},{min:10,b:{fo
 // ---- 体力补给: free stamina at lunch and dinner (local time), plus rewarded ads
 export const SUPPLY:{from:number;to:number;stamina:number;name:string}[]=[{from:12,to:14,stamina:30,name:'午餐'},{from:18,to:20,stamina:30,name:'晚餐'}];
 export const AD_STAMINA={amount:25,perDay:3};
+/** rewarded-video placements and how many times a day each pays (keeps the economy tuned with tools/sim intact) */
+export const AD_CAPS:Record<string,number>={battle2x:5,train2x:2,hatch:2,tower:1,sign2x:1};
 // ---- 兑换码 (offline table for the prototype; the release build should verify codes on the server)
 export const CODES:Record<string,Bundle>={MENGCHONG:{coins:1000,food:20},SHOUWEI:{stamina:50,gems:{ruby2:1}},PETGUARD:{mats:{crystal:5},food:10}};
 
@@ -71,7 +73,7 @@ export const ACH:{id:AchStat;name:string;unit:string;tiers:number[];b:(tier:numb
 export interface MailDef{id:string;from:string;title:string;body:string;b?:Bundle}
 export const MAILS:MailDef[]=[
  {id:'welcome',from:'营地向导',title:'欢迎来到萌宠营地',body:'欢迎你，队长！带上赤焰小狐守住核心，击碎对面的水晶就能推进冒险。附件是一点见面礼。',b:{coins:200,food:10}},
- {id:'launch',from:'萌宠守卫战运营组',title:'开服福利',body:'感谢你参加开服！营地为每位队长准备了开服补给，记得每天来福利中心签到，第 7 天送稀有宠物「月绒兔」。',b:{stamina:50,coins:1000,gems:{ruby1:2,emerald1:2}}},
+ {id:'launch',from:'灵爪守望运营组',title:'开服福利',body:'感谢你参加开服！营地为每位队长准备了开服补给，记得每天来福利中心签到，第 7 天送稀有宠物「月绒兔」。',b:{stamina:50,coins:1000,gems:{ruby1:2,emerald1:2}}},
  {id:'guide',from:'营地向导',title:'新手小贴士',body:'· 战斗中宠物经验满了，点卡牌花金币升级\n· 队伍升级会掉卡牌，选一张买下\n· 敌方水晶右边的图标会预告它下一步\n· 岩盾卫活着时水晶伤害减半，先打掉它'}];
 
 // ---- 图鉴

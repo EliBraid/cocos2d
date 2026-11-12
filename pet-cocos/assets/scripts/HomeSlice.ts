@@ -1,18 +1,22 @@
-// 萌宠守卫战 · 登录 + 主城. Built at runtime from the code-drawn UI kit (PaperUI + ui/UISkin);
+// 灵爪守望 · 登录 + 主城. Built at runtime from the code-drawn UI kit (PaperUI + ui/UISkin);
 // account data comes from meta/PlayerModel.
-import {_decorator,Component,Node,UITransform,Sprite,SpriteFrame,Label,Graphics,Color,UIOpacity,tween,Vec3,resources,sp,director,view,ResolutionPolicy,sys,EventTouch,HorizontalTextAlignment,Mask} from 'cc';
+import {IS_XHS} from './Platform';
+import {Rect,_decorator,Component,Node,UITransform,Sprite,SpriteFrame,Label,Graphics,Color,UIOpacity,tween,Vec3,resources,sp,director,view,ResolutionPolicy,sys,EventTouch,HorizontalTextAlignment,Mask} from 'cc';
 import {PaperUI,C} from './PaperUI';
 import {Guide} from './Guide';
 import {Kit} from './Kit';
+import {fitScreen,placeBox,coverFull,coverScale,dockTop,FIT} from './Screen';
 import {activeEvents} from './meta/Events';
 import {initShare} from './Share';
+import {Ads} from './Ads';
+import {cloudBoot,CloudState,sendFeedback,towerRank,flush} from './Cloud';
 import {CampLife} from './CampLife';
 import {GearUI} from './GearUI';
-import {WelfareUI} from './WelfareUI';
+import {WelfareUI,askText} from './WelfareUI';
 import {CodexUI} from './CodexUI';
 import {RewardPop} from './RewardPop';
 import type {GearHost} from './UIHost';
-import {HEALTH_TIP,AGE_RATING,AGE_TIP,USER_AGREEMENT,PRIVACY} from './meta/Legal';
+import {HEALTH_TIP,AGE_ART,AGE_TIP,USER_AGREEMENT,PRIVACY} from './meta/Legal';
 import type {BtnColor} from './PaperUI';
 import {PetAppearance} from './PetAppearance';
 import {FOX_PROFILE,PET_LOOK} from './PetProfile';
@@ -28,23 +32,24 @@ const SESSION=globalThis as any;
 export class HomeSlice extends Component{
  ui=new PaperUI();model!:PlayerModel;ready=false;
  private art:Record<string,SpriteFrame>={};private foxData!:sp.SkeletonData;private minionData!:sp.SkeletonData;
- private root!:Node;private home!:Node;private guide:Guide|null=null;private kit!:Kit;private eventPill:Node|null=null;private eventText:Label|null=null;private login:Node|null=null;private lfx:{t:number;art:Node|null;burst:Graphics;emblem:Node;chars:{n:Node;x:number;y:number;a:number;d:number}[];rib:Node;parts:Graphics;leaves:{x:number;y:number;vx:number;vy:number;r:number;s:number;c:Color;spin:number}[];dot:Node;btn:Node;shine:Graphics;chat:Node;box:Node;guest:Node}|null=null;private modal:Node|null=null;private toastLabel!:Label;private toastT=0;
+ private root!:Node;private home!:Node;private guide:Guide|null=null;private kit!:Kit;private eventPill:Node|null=null;private eventText:Label|null=null;private login:Node|null=null;private lfx:{t:number;ey:number;artK:number;art:Node|null;burst:Graphics;emblem:Node;chars:{n:Node;x:number;y:number;a:number;d:number}[];rib:Node;parts:Graphics;leaves:{x:number;y:number;vx:number;vy:number;r:number;s:number;c:Color;spin:number}[];dot:Node;btn:Node;shine:Graphics;chat:Node|null;box:Node;guest:Node}|null=null;private modal:Node|null=null;private toastLabel!:Label;private toastT=0;
  private labels:Record<string,Label>={};private xpBar!:(v:number)=>void;private dots:Record<string,Node>={};private stars:Node[]=[];private glow!:Graphics;private time=0;private tick=0;
  private gear!:GearUI;private wf!:WelfareUI;private codex!:CodexUI;private onlineAcc=0;private pop!:RewardPop;private saveAcc=0;private life:CampLife|null=null;private rigs:Record<string,sp.SkeletonData>={};private crystalNode:Node|null=null;private glowNode:Node|null=null;
  async start(){
   try{
-   view.setDesignResolutionSize(540,960,ResolutionPolicy.SHOW_ALL);this.node.getComponent(UITransform)!.setContentSize(540,960);
+   fitScreen(this.node);
    const load=<T>(name:string,type:any)=>new Promise<T>((ok,fail)=>resources.load(name,type,(e,a)=>e?fail(e):ok(a as T)));
-   const frames=['art/camp','art/crystal','battle/ember-avatar','home/emblem','home/ribbon','home/sign','home/chat','home/stage-thumb'];
+   const frames=['art/camp','art/crystal','battle/ember-avatar','home/avatar-fox','home/emblem',AGE_ART,'home/ribbon','home/sign','home/chat','home/stage-thumb'];
    await Promise.all([PaperUI.loadSkin(),...frames.map(async n=>{const f=await load<SpriteFrame>(n+'/spriteFrame',SpriteFrame);f.packable=false;this.art[n]=f;})]);
    // paintings made with the Codex batch (tools/imagegen); the screen falls back to the camp art without them
-   await Promise.all(['home/login-keyart',...[1,2,3,4,5,6,7,8].map(i=>'stages/ch'+i)].map(async n=>{try{this.art[n]=await load<SpriteFrame>(n+'/spriteFrame',SpriteFrame);}catch{}}));
+   await Promise.all(['home/login-keyart','home/title-logo',...[1,2,3,4,5,6,7,8].map(i=>'stages/ch'+i)].map(async n=>{try{this.art[n]=await load<SpriteFrame>(n+'/spriteFrame',SpriteFrame);}catch{}}));
    await Promise.all(Object.keys(PETS).map(async k=>{try{this.art['pet:'+k]=await load<SpriteFrame>(`pets/portrait/${PETS[k].id}/spriteFrame`,SpriteFrame);}catch{this.art['pet:'+k]=this.art['battle/ember-avatar'];}}));
    [this.foxData,this.minionData]=await Promise.all([load<sp.SkeletonData>(PET_SKELETON,sp.SkeletonData),load<sp.SkeletonData>('battle/minion/minion',sp.SkeletonData)]);
    this.rigs.fox=this.foxData;await Promise.all(Object.keys(PETS).filter(k=>k!=='fox'&&!PET_LOOK[k]?.base).map(async k=>{try{this.rigs[k]=await load<sp.SkeletonData>(`pets/rig/${k}/${k}`,sp.SkeletonData);}catch{}}));for(const k of Object.keys(PETS)){const b=PET_LOOK[k]?.base;if(b&&this.rigs[b])this.rigs[k]=this.rigs[b];}
    // painted layered rigs (tools/layered-rig) replace the fox / base fallbacks wherever a pet has its own
    await Promise.all(Object.keys(PETS).map(async k=>{try{this.rigs[k]=await load<sp.SkeletonData>(`pets/rig/${k}/${k}`,sp.SkeletonData);}catch{}}));
-   this.model=new PlayerModel(sys.localStorage);(globalThis as any).__towerFloor=0;initShare();this.model.seedMails();this.build();this.guide=new Guide(this.root,this.ui);this.refresh();this.ready=true;(globalThis as any).__home=this;
+   await Promise.race([cloudBoot(sys.localStorage),new Promise(r=>setTimeout(r,4000))]); // cloud save + live config; never block startup long
+   this.model=new PlayerModel(sys.localStorage);(globalThis as any).__towerFloor=0;initShare();(globalThis as any).wx?.onHide?.(()=>flush());this.model.seedMails();this.build();this.guide=new Guide(this.root,this.ui);this.refresh();this.ready=true;(globalThis as any).__home=this;
    if(!SESSION.__petGuardiansLoggedIn)this.showLogin();else this.showBattleReward();
   }catch(e){console.error(e);this.ui.label(this.node,'主城加载失败',270,450,480,60,26,true);this.ui.label(this.node,String(e),270,510,500,80,14);}
  }
@@ -60,7 +65,7 @@ export class HomeSlice extends Component{
  private starRow(parent:Node,x:number,y:number,size:number,count:number,gap=size*1.05){const out:Node[]=[];for(let i=0;i<3;i++)out.push(this.ui.img(parent,i<count?'star':'star-off',x+i*gap,y,size));return out;}
  // ================================================================ home
  private build(){
-  this.root=this.ui.node(this.node,'Home',270,480,540,960);this.home=this.ui.node(this.root,'Main',270,480,540,960);const h=this.home,ui=this.ui;
+  this.root=this.ui.node(this.node,'Home',270,480,540,960);placeBox(this.root);this.home=this.ui.node(this.root,'Main',270,480,540,960);const h=this.home,ui=this.ui;
   ui.rect(h,'Paper',270,480,540,960,new Color(239,230,207),false);
   // camp painting + crystal
   const campNode=this.sprite(h,'art/camp',270,372,540,540);
@@ -84,12 +89,19 @@ export class HomeSlice extends Component{
    this.tap(pill,()=>{const ev=activeEvents();if(ev.length)this.say(ev.map(e=>`${e.name}：${e.desc}`).join('\n'),3);});}
   // top bar
   ui.frame(h,'Top',270,52,532,98,'panel');
-  ui.img(h,'avatar-ring',54,52,78);this.sprite(h,'battle/ember-avatar',54,50,60,54);this.hit(h,'Avatar',54,52,78,78,()=>this.openCaptain());this.dot(h,'cap',84,24);
+  ui.img(h,'avatar-ring',54,52,78);this.sprite(h,'home/avatar-fox',54,52,64,64);this.hit(h,'Avatar',54,52,78,78,()=>this.openCaptain());this.dot(h,'cap',84,24);
   this.text(h,'name','',150,32,104,30,21,true,C.ink,HorizontalTextAlignment.LEFT);ui.icon(h,'pencil',214,31,22);this.hit(h,'EditName',180,32,90,34,()=>this.say('改名功能下一步接入微信昵称'));
   this.text(h,'level','',150,57,104,22,14,true,C.muted,HorizontalTextAlignment.LEFT);this.xpBar=ui.bar(h,152,77,110,12,0,C.cyan);this.hit(h,'LevelTap',200,66,150,40,()=>this.openCaptain());
   this.counter(h,'coins','coin',322,40,104);this.counter(h,'food','food',430,40,92);
   ui.roundBtn(h,'settings',507,40,36,()=>this.openSettings(),'round','gear');
   this.text(h,'stamina-tip','',380,77,230,20,12,true,C.muted,HorizontalTextAlignment.RIGHT);
+  // the camp (painting, its animated pieces, pets, side buttons) rises with the top bar as far as the painting reaches
+  // under the squad panel (it overhangs by ~79px); any extra room only lifts the top bar to the safe top
+  const camp=dockTop(h,545,75);dockTop(h,112-camp,FIT.free-camp); // second cut is in the already-lifted coordinates: just the top bar
+  // on very tall screens the rest of the gap above the painting gets a mirrored strip of its tree tops
+  {const g=FIT.free-camp,f=this.art['art/camp'];if(g>2&&f){const K=f.rect.width/540,th=Math.min(f.rect.height,(g+6)*K),sf=f.clone();sf.rect=new Rect(f.rect.x,f.rect.y,f.rect.width,th);
+   const fill=this.ui.node(h,'CampTop',270,102-camp-th/K/2+3,540,th/K),sp=fill.addComponent(Sprite);sp.sizeMode=Sprite.SizeMode.CUSTOM;sp.spriteFrame=sf;fill.getComponent(UITransform)!.setContentSize(540,th/K);
+   fill.setScale(1,-1,1);fill.setSiblingIndex(campNode.getSiblingIndex()+1);}}
   // squad: header (title / power / edit) + six evenly spread cards centred in the panel
   ui.frame(h,'Squad',270,632,532,138,'panel');ui.icon(h,'paw',34,590,24);this.text(h,'','我的出战小队',118,590,150,26,18,true,C.ink,HorizontalTextAlignment.LEFT);
   ui.icon(h,'swords',214,590,26);this.text(h,'','战力',246,590,40,20,13,true,C.muted);const pw=this.bold(h,'',322,590,100,28,22,C.red,C.white,3);this.labels.power=pw;
@@ -148,7 +160,13 @@ export class HomeSlice extends Component{
    this.text(p,'',`今日剩余挑战机会 ${left}/${TOWER.dailyTries}（胜利不消耗）`,w/2,322,w-40,20,14,true,left>0?C.ink:C.red);
    this.ui.btn(p,'tower-go',left>0?`挑战第 ${n} 层`:'明天再来',w/2,376,220,54,()=>{if(m.towerTries()<=0){this.say('今天的挑战机会用完了，明天再来',1.6);return;}
     (globalThis as any).__towerFloor=n;const cover=this.ui.rect(this.root,'Fade',270,480,540,960,new Color(31,32,27,255),false),op=cover.addComponent(UIOpacity);op.opacity=0;tween(op).to(.25,{opacity:255}).call(()=>director.loadScene('Battle')).start();},left>0?'red':'grey',21,'trophy');
-   return 420;});}
+   if(!IS_XHS)this.ui.btn(p,'tower-rank','排行榜',w/2,436,160,40,()=>this.openTowerRank(),'cream',15,'trophy');
+   return 470;});}
+ /** 试炼之塔 全服排行 (cloud `tower` collection); offline it says so */
+ private openTowerRank(){const m=this.model;this.openModal('试炼之塔排行',(p,w)=>{const tip=this.text(p,'','加载中…',w/2,90,w-40,22,15,true,C.muted);
+  towerRank(m.towerBest||undefined,m.name).then(r=>{if(!tip.isValid)return;if(!r){tip.string='连不上排行榜（需要在微信里联网游玩）';return;}tip.string=r.mine?`我的最高 ${r.mine.best} 层　第 ${r.mine.rank} 名`:'还没有成绩，去爬塔吧';
+   r.top.forEach((e,i)=>{const y=126+i*26;this.text(p,'',`${i+1}`,40,y,40,22,15,true,i<3?C.red:C.ink);this.text(p,'',e.name+(e.me?'（我）':''),150,y,200,22,15,e.me,e.me?C.red:C.ink,HorizontalTextAlignment.LEFT);this.text(p,'',`${e.best} 层`,w-60,y,90,22,15,true,C.ink);});});
+  return 126+20*26+10;});}
  private startAdventure(){(globalThis as any).__towerFloor=0;if(!this.model.startBattle()){this.say(`体力不足（需要 ${STAMINA.battleCost}），${Math.ceil(this.model.secondsToNextStamina()/60)} 分钟后恢复 1 点`,2.2);return;}
   this.model.save();this.refresh();const cover=this.ui.rect(this.root,'Fade',270,480,540,960,new Color(31,32,27,255),false),op=cover.addComponent(UIOpacity);op.opacity=0;tween(op).to(.25,{opacity:255}).call(()=>director.loadScene('Battle')).start();}
  private showBattleReward(){const r=this.model.lastReward;if(!r)return;this.model.lastReward=null;this.model.save();
@@ -170,7 +188,9 @@ export class HomeSlice extends Component{
   this.text(p,'',`每小时 +${Math.round(r.coins)} 金币　+${r.food.toFixed(1)} 经验果`,w/2,340,w-40,20,14,true,C.ink);
   this.text(p,'','阵容宠物等级越高，产出越快。最多存 8 小时。',w/2,364,w-40,20,12,false,C.muted);
   const ok=pend.coins>0||pend.food>0;
-  this.ui.btn(p,'collect-train',ok?'收取':'还没有产出',w/2,414,200,52,()=>{const got=m.collectTrain();if(got){m.save();this.refresh();this.life?.trainCollect();this.openTraining();this.pop.show('训练收益',{b:{coins:got.coins,food:got.food}});}},ok?'green':'grey',21);return 450;});}
+  this.ui.btn(p,'collect-train',ok?'收取':'还没有产出',w/2,414,200,52,()=>{const got=m.collectTrain();if(got){m.save();this.refresh();this.life?.trainCollect();this.openTraining();this.pop.show('训练收益',{b:{coins:got.coins,food:got.food}});}},ok?'green':'grey',21);
+  if(ok&&Ads.available('train2x')&&m.adLeft('train2x')>0){this.ui.btn(p,'train2x',`看广告双倍收取（剩${m.adLeft('train2x')}次）`,w/2,474,280,46,()=>{this.say('广告播放中…',1.2);Ads.rewarded('train2x').then(ad=>{if(!ad){this.say('广告没有看完，奖励未翻倍',1.6);return;}const b=m.adDoubleTrain();if(b){m.save();this.refresh();this.life?.trainCollect();this.openTraining();this.pop.show('双倍训练收益',{b});}});},'gold',16,'energy');return 510;}
+  return 450;});}
  private rewardRow(p:Node,cx:number,y:number,items:([string,string]|[string,string,string])[],gap=96){items.forEach(([icon,s,name],i)=>{const x=cx+(i-(items.length-1)/2)*gap;const chip=this.ui.frame(p,'reward:'+icon,x,y,80,74,'card');this.ui.icon(chip,icon,40,30,40);this.bold(chip,s,40,58,76,22,16,C.ink,C.white,3);
   if(name)this.text(p,'',name,x,y+48,90,18,12,true,C.muted);});}
  // ================================================================ modals
@@ -200,47 +220,66 @@ export class HomeSlice extends Component{
  private openHatchery(){this.gear.openHatchery();}
  private openAdventure(){this.gear.adv.open();}
  private openCaptain(){this.gear.cap.open(this.model.roadReady>0?0:this.gear.cap.lastTab);}
- private openSettings(){const m=this.model;this.openModal('设置',(p,w)=>{const card=this.ui.frame(p,'Profile',w/2,94,w-48,74,'card');this.ui.img(card,'avatar-ring',40,37,56);this.sprite(card,'battle/ember-avatar',40,36,44,40);
+ private openSettings(){const m=this.model;this.openModal('设置',(p,w)=>{const card=this.ui.frame(p,'Profile',w/2,94,w-48,74,'card');this.ui.img(card,'avatar-ring',40,37,56);this.sprite(card,'home/avatar-fox',40,37,46,46);
   this.text(card,'',`${m.name}`,80+90,24,180,24,18,true,C.ink,HorizontalTextAlignment.LEFT);this.text(card,'',`队长 Lv.${m.captainLevel}　冒险 ${m.stats.battles} 场　胜利 ${m.stats.wins} 场`,80+120,50,240,20,12,true,C.muted,HorizontalTextAlignment.LEFT);
   this.ui.btn(p,'reset','重置本地进度',w/2,170,210,48,()=>{const b=this.ui.buttons.get('reset')!;if(b.name!=='button:reset-confirm'){b.name='button:reset-confirm';b.getComponentInChildren(Label)!.string='再点一次确认';return;}
    try{sys.localStorage.removeItem('pet-guardians-player-v1');}catch{}this.model=new PlayerModel(sys.localStorage);this.model.save();this.closeModal();this.refresh();this.say('进度已重置');},'grey',17);
   const docs:[string,string][]=[['用户协议',USER_AGREEMENT],['隐私政策',PRIVACY],['适龄提示',AGE_TIP],['健康游戏忠告',HEALTH_TIP]];
   docs.forEach(([t,b],i)=>this.ui.btn(p,'doc'+i,t,w/2+(i%2?92:-92),236+Math.floor(i/2)*54,170,44,()=>this.openDoc(t,b),'cream',15));
-  this.ui.btn(p,'set-code','兑换码',w/2,350,170,44,()=>this.wf.openWelfare(3),'cream',15,'chest');
+  this.ui.btn(p,'set-code','兑换码',IS_XHS?w/2:w/2-92,350,170,44,()=>this.wf.openWelfare(3),'cream',15,'chest');
+  if(!IS_XHS)this.ui.btn(p,'set-fb','意见反馈',w/2+92,350,170,44,()=>this.feedback(),'cream',15,'mail');
   this.text(p,'','版本号 0.3.0',w/2,392,w-40,20,12,true,C.muted);return 408;});}
+ /** 意见反馈: goes to the cloud `feedback` collection (read it in the 云开发 console) */
+ private feedback(){askText('意见反馈','遇到的问题或建议（500 字以内）').then(t=>{if(!t||!t.trim())return;const m=this.model;
+  sendFeedback(t,{captain:m.captainLevel,stage:m.stage,battles:m.stats.battles}).then(r=>this.say(r?'收到了，谢谢你的反馈！':'网络不太好，稍后再试',1.8));});}
+ /** 公告 from the console's `notices` collection, each shown once */
+ private showNotices(){const seen=(()=>{try{return JSON.parse(sys.localStorage.getItem('lz-notices-seen')||'[]');}catch{return [];}})() as string[];
+  const n=CloudState.notices.find(x=>!seen.includes(x.id));if(!n)return false;try{sys.localStorage.setItem('lz-notices-seen',JSON.stringify([...seen,n.id].slice(-50)));}catch{}
+  this.openDoc(n.title,n.body);return true;}
  // ================================================================ login
- private showLogin(){const ui=this.ui,L=ui.node(this.root,'Login',270,480,540,960);this.login=L;this.tap(ui.node(L,'Block',270,480,540,960),()=>{});
+ private showLogin(){const ui=this.ui,L=ui.node(this.root,'Login',270,480,540,960);this.login=L;{const blk=ui.node(L,'Block',270,480,540,960);coverFull(blk);this.tap(blk,()=>{});}
   ui.rect(L,'Paper',270,480,540,960,new Color(247,243,231),false);const keyart=!!this.art['home/login-keyart'];
-  let artNode:Node|null=null;if(keyart)artNode=this.sprite(L,'home/login-keyart',270,480,540,960);else{const camp=this.sprite(L,'art/camp',270,600,760,760);camp.addComponent(UIOpacity).opacity=70;}
+  let artNode:Node|null=null;const artK=coverScale();if(keyart){artNode=this.sprite(L,'home/login-keyart',270,480,540,960);artNode.setScale(artK,artK,1);}else{const camp=this.sprite(L,'art/camp',270,600,760,760);camp.addComponent(UIOpacity).opacity=70;}
   const fade=ui.node(L,'Fade',270,300,540,600).addComponent(Graphics);for(let i=0;i<12;i++){fade.fillColor=new Color(247,243,231,Math.round((keyart?150:255)*(1-i/12)));fade.rect(-270,300-i*30-30,540,30);fade.fill();}
   // drifting leaves and sparkles over the art; a slow light burst behind the emblem
-  const parts=ui.node(L,'Leaves',270,480,540,960).addComponent(Graphics);const burst=ui.node(L,'Burst',270,92,300,300).addComponent(Graphics);
-  const emblem=this.sprite(L,'home/emblem',270,92,150,128);
+  // painted title logo (art-gen/title-logo.png) replaces the emblem + typed title; the old pair stays as fallback
+  const logo=!!this.art['home/title-logo'],ey=logo?192:92;
+  const parts=ui.node(L,'Leaves',270,480,540,960).addComponent(Graphics);const burst=ui.node(L,'Burst',270,ey,300,300).addComponent(Graphics);
+  const emblem=logo?this.sprite(L,'home/title-logo',278,ey,470,159):this.sprite(L,'home/emblem',270,ey,150,128);
   // title: one label per character so they can drop in and bob one after another
   const chars:{n:Node;x:number;y:number;a:number;d:number}[]=[];
-  [...'萌宠'].forEach((ch,i)=>{const l=this.text(L,'',ch,123+i*70,196,80,86,70,true,C.red);l.enableOutline=true;l.outlineColor=C.ink;l.outlineWidth=4;chars.push({n:l.node,x:123+i*70,y:196,a:4,d:.15+i*.1});});
-  [...'守卫战'].forEach((ch,i)=>{const l=this.text(L,'',ch,294+i*66,198,76,86,66,true,C.ink);l.enableOutline=true;l.outlineColor=C.white;l.outlineWidth=3;chars.push({n:l.node,x:294+i*66,y:198,a:-3,d:.38+i*.1});});
-  const rib=this.sprite(L,'home/ribbon',270,268,400,72);this.text(rib,'','养一队萌宠，守住你的城。',200,32,330,34,22,true);
+  if(!logo)[...'灵爪'].forEach((ch,i)=>{const l=this.text(L,'',ch,160+i*72,196,80,86,70,true,C.red);l.enableOutline=true;l.outlineColor=C.ink;l.outlineWidth=4;chars.push({n:l.node,x:160+i*72,y:196,a:4,d:.15+i*.1});});
+  if(!logo)[...'守望'].forEach((ch,i)=>{const l=this.text(L,'',ch,310+i*72,198,76,86,66,true,C.ink);l.enableOutline=true;l.outlineColor=C.white;l.outlineWidth=3;chars.push({n:l.node,x:310+i*72,y:198,a:-3,d:.38+i*.1});});
+  const rib=this.sprite(L,'home/ribbon',270,logo?298:268,400,72);this.text(rib,'','养一队萌宠，守住你的城。',200,32,330,34,22,true);
   if(!keyart)this.sprite(L,'art/crystal',308,448,176,172);
   if(!keyart)for(const [x,y,s,f] of [[46,618,.62,1],[500,560,.55,-1],[470,668,.45,-1]] as number[][]){const n=new Node('Lurker');n.layer=L.layer;L.addChild(n);n.addComponent(UITransform).setContentSize(80,80);const k=n.addComponent(sp.Skeleton);k.premultipliedAlpha=false;k.skeletonData=this.minionData;k.setSkin('fuzz');k.setSlotsToSetupPose();k.setAnimation(0,'idle',true);k.color=new Color(70,60,76,255);n.setPosition(x-270,480-y,0);n.setScale(s*f,s,1);}
   const fx=new Node('LoginFox');fx.layer=L.layer;L.addChild(fx);fx.addComponent(UITransform).setContentSize(200,200);const fk=fx.addComponent(sp.Skeleton);fk.premultipliedAlpha=false;fk.skeletonData=this.rigs.fox||this.foxData; // hand-painted fox (tools/layered-rig)
   new PetAppearance(fk,{...FOX_PROFILE.appearance}).apply(false);
-  fk.setAnimation(0,'idle',true);fk.setAnimation(1,'face-focus',true);fk.setAnimation(2,'look-right',true);fx.setPosition(196-270,480-640,0);fx.setScale(.42,.42,1);this.tap(this.ui.node(L,'LoginFoxHit',196,560,160,190),()=>{fk.setAnimation(0,'attack',false);fk.addAnimation(0,'idle',true,0);});
-  const server=ui.btn(L,'server','萌宠1服 · 推荐',270,724,320,52,()=>this.say('当前只开放 萌宠1服'),'cream',19);
+  fk.setAnimation(0,'idle',true);fk.setAnimation(1,'face-focus',true);fk.setAnimation(2,'look-right',true);if(artNode){fx.parent=artNode;fx.setScale(.42,.42,1);}else fx.setScale(.42,.42,1);fx.setPosition(196-270,480-610,0);this.tap(this.ui.node(artNode||L,'LoginFoxHit',196,530,160,190),()=>{fk.setAnimation(0,'attack',false);fk.addAnimation(0,'idle',true,0);});
+  const server=ui.btn(L,'server','萌宠1服 · 推荐',270,686,320,52,()=>this.say('当前只开放 萌宠1服'),'cream',19);
   const online=ui.node(server.getChildByName('content')!,'Online',62,26,16,16).addComponent(Graphics);online.fillColor=new Color(76,190,110);online.strokeColor=C.ink;online.lineWidth=2;online.circle(0,0,6);online.fill();online.stroke();
-  const login=ui.btn(L,'wx-login','微信登录',270,806,380,80,()=>this.doLogin(),'red',34);const chat=this.sprite(login.getChildByName('content')!,'home/chat',78,40,52,48);
+  const login=ui.btn(L,'wx-login',IS_XHS?'开始游戏':'微信登录',270,756,380,80,()=>this.doLogin(),'red',34);const chat=IS_XHS?null:this.sprite(login.getChildByName('content')!,'home/chat',78,40,52,48);
   const sm=ui.node(login,'ShineMask',190,38,364,66);sm.addComponent(Mask).type=Mask.Type.GRAPHICS_RECT;const shine=ui.node(sm,'Shine',182,33,364,66).addComponent(Graphics);
-  const agree=ui.node(L,'Agree',270,862,420,34);const box=ui.frame(agree,'Box',40,17,26,26,'card');const check=ui.icon(box,'check',14,12,26);check.active=this.model.agreed;
+  const agree=ui.node(L,'Agree',270,815,420,34);const box=ui.frame(agree,'Box',40,17,26,26,'card');const check=ui.icon(box,'check',14,12,26);check.active=this.model.agreed;
   const toggle=()=>{this.model.agreed=!this.model.agreed;check.active=this.model.agreed;this.model.save();};this.tap(box,toggle);
   this.text(agree,'','我已阅读并同意',118,17,112,24,15,false,C.ink,HorizontalTextAlignment.LEFT);this.hit(agree,'AgreeText',118,17,112,30,toggle);
   this.tap(this.text(agree,'','《用户协议》',230,17,100,24,15,false,LINK).node,()=>this.openDoc('用户协议',USER_AGREEMENT));
   this.tap(this.text(agree,'','《隐私政策》',332,17,100,24,15,false,LINK).node,()=>this.openDoc('隐私政策',PRIVACY));
-  const guest=this.text(L,'','游客体验 ›',270,900,140,30,16,true,C.muted).node;this.tap(guest,()=>this.enter());
-  HEALTH_TIP.split('\n').forEach((t,i)=>this.bold(L,t,270,926+i*18,520,18,11,C.ink,C.white,2));
+  agree.getComponentsInChildren(Label).forEach(l=>{l.enableOutline=true;l.outlineColor=new Color(255,250,229);l.outlineWidth=2;});
+  const guestLabel=this.text(L,'','游客体验 ›',270,851,140,30,16,true,C.muted);guestLabel.enableOutline=true;guestLabel.outlineColor=new Color(255,250,229);guestLabel.outlineWidth=2;const guest=guestLabel.node;this.tap(guest,()=>this.enter());
+  // A quiet paper fade keeps the complete notice readable without a boxed overlay.
+  const health=ui.node(L,'HealthNotice',270,915,540,90),paper=health.addComponent(Graphics);
+  for(let y=0;y<90;y+=2){const k=Math.min(1,y/28),a=Math.round(248*k*k*(3-2*k));paper.fillColor=new Color(248,245,230,a);paper.rect(-270,45-y-2,540,2);paper.fill();}
+  paper.strokeColor=new Color(113,99,71,100);paper.lineWidth=.7;paper.moveTo(-154,22);paper.lineTo(-66,22);paper.moveTo(66,22);paper.lineTo(154,22);paper.stroke();
+  const noticeInk=new Color(83,74,54);this.text(health,'','健康游戏忠告',270,23,116,20,13,true,noticeInk);
+  HEALTH_TIP.split('\n').forEach((t,i)=>this.text(health,'',t,270,46+i*21,490,20,14,false,noticeInk));
+  this.tap(health,()=>this.openDoc('健康游戏忠告',HEALTH_TIP));
   const leaves=Array.from({length:16},()=>this.newLeaf(true));
-  this.lfx={t:0,art:artNode,burst,emblem,chars,rib,parts,leaves,dot:online.node,btn:login,shine,chat,box,guest};
+  const up=dockTop(L,330);for(const c of chars)c.y-=up;
+  this.lfx={t:0,ey:ey-up,artK,art:artNode,burst,emblem,chars,rib,parts,leaves,dot:online.node,btn:login,shine,chat,box,guest};
   for(const c of chars){c.n.setScale(0,0,1);}emblem.setScale(.2,.2,1);
-  const age=ui.rect(L,'Age',42,40,58,58,new Color(88,170,96),true);this.bold(age,AGE_RATING,29,24,54,28,24,C.white,C.ink,3);this.text(age,'','适龄提示',29,46,56,14,10,true,C.white);this.tap(age,()=>this.openDoc('适龄提示',AGE_TIP));
+  // Unmodified CADPA mark from the primary platform's standard reference; preserve its aspect ratio.
+  const age=this.sprite(L,AGE_ART,58,70,80,80*239/198);age.name='Age';this.tap(age,()=>this.openDoc('适龄提示',AGE_TIP));
   this.text(L,'','版本号 0.3.0',492,20,90,16,10,false,C.muted);}
  private docPage=0;
  /** long text: wrapped to the card width and paged */
@@ -255,13 +294,13 @@ export class HomeSlice extends Component{
  private animateLogin(dt:number){const F=this.lfx;if(!F||!this.login?.isValid){this.lfx=null;return;}F.t+=dt;const t=F.t;
   const back=(k:number)=>{k=Math.max(0,Math.min(1,k));const c=1.70158;return 1+(c+1)*Math.pow(k-1,3)+c*Math.pow(k-1,2);};
   // emblem: pop in, then float; light rays turn slowly behind it
-  const es=t<.5?back(t/.5):1+.03*Math.sin(t*2.2);F.emblem.setScale(es,es,1);F.emblem.setPosition(0,480-92+4*Math.sin(t*1.6),0);
+  const es=t<.5?back(t/.5):1+.03*Math.sin(t*2.2);F.emblem.setScale(es,es,1);F.emblem.setPosition(0,480-F.ey+4*Math.sin(t*1.6),0);
   const b=F.burst;b.clear();const ba=Math.min(1,t/.6)*(.55+.25*Math.sin(t*2.5));for(let i=0;i<12;i++){const a=t*.25+i*Math.PI/6;b.fillColor=new Color(255,226,130,Math.round(110*ba));b.moveTo(0,0);b.lineTo(Math.cos(a-.09)*140,Math.sin(a-.09)*140);b.lineTo(Math.cos(a+.09)*140,Math.sin(a+.09)*140);b.close();b.fill();}
   b.fillColor=new Color(255,240,190,Math.round(120*ba));b.circle(0,0,62);b.fill();
   // title letters drop in one by one, then each bobs a little out of phase
   for(const [i,c] of F.chars.entries()){const k=(t-c.d)/.35;const sc=k<=0?0:k<1?back(k):1;c.n.setScale(sc,sc,1);c.n.setPosition(c.x-270,480-c.y+(k<1?(1-Math.min(1,Math.max(0,k)))*40:0)+3*Math.sin(t*2.4+i*.8),0);c.n.angle=c.a+2*Math.sin(t*1.8+i);}
   F.rib.angle=1.2*Math.sin(t*1.3);
-  if(F.art){const z=1.02+.02*Math.sin(t*.25);F.art.setScale(z,z,1);}
+  if(F.art){const z=F.artK*(1.02+.02*Math.sin(t*.25));F.art.setScale(z,z,1);}
   // leaves
   const g=F.parts;g.clear();for(const l of F.leaves){l.x+=l.vx*dt+Math.sin(t*1.5+l.r)*12*dt;l.y+=l.vy*dt;l.r+=l.spin*dt;if(l.y>980||l.x>580)Object.assign(l,this.newLeaf());
    const cx=l.x-270,cy=480-l.y,ca=Math.cos(l.r),sa=Math.sin(l.r),L2=l.s*1.7,W=l.s*.7;g.fillColor=l.c;
@@ -271,12 +310,12 @@ export class HomeSlice extends Component{
   const dp=1+.25*Math.max(0,Math.sin(t*4));F.dot.setScale(dp,dp,1);
   const bs=1+.025*Math.sin(t*3);F.btn.setScale(bs,bs,1);
   const sh=F.shine;sh.clear();const sx=((t%2.6)/1.4)*560-280;if(sx<300){sh.fillColor=new Color(255,255,255,90);sh.moveTo(sx-20,-40);sh.lineTo(sx+20,-40);sh.lineTo(sx-10,40);sh.lineTo(sx-50,40);sh.close();sh.fill();sh.fillColor=new Color(255,255,255,50);sh.moveTo(sx+30,-40);sh.lineTo(sx+42,-40);sh.lineTo(sx+12,40);sh.lineTo(sx,40);sh.close();sh.fill();}
-  const hop=(t%3)<.4?Math.sin((t%3)/.4*Math.PI)*8:0;F.chat.setPosition(F.chat.position.x,hop,0);
+  const hop=(t%3)<.4?Math.sin((t%3)/.4*Math.PI)*8:0;if(F.chat)F.chat.setPosition(F.chat.position.x,hop,0);
   // until agreed, the checkbox nudges; the guest link drifts
   const ok=this.model.agreed;const cb=ok?1:1+.12*Math.max(0,Math.sin(t*5));F.box.setScale(cb,cb,1);
   F.guest.setPosition(4*Math.sin(t*3)*(1),F.guest.position.y,0);}
  private doLogin(){if(!this.model.agreed){this.say('请先勾选同意《用户协议》和《隐私政策》');const a=this.login?.getChildByName('Agree');if(a)tween(a).by(.05,{position:new Vec3(8,0,0)}).by(.1,{position:new Vec3(-16,0,0)}).by(.05,{position:new Vec3(8,0,0)}).start();return;}
   // In the WeChat mini-game runtime wx.login gives a code for the game server; the prototype has no server yet, so it simply enters.
   const wx=(globalThis as any).wx;if(wx?.login){wx.login({success:()=>this.enter(),fail:()=>this.enter()});return;}this.enter();}
- private enter(){SESSION.__petGuardiansLoggedIn=true;this.model.loggedIn=true;this.model.save();const L=this.login;if(!L)return;const op=L.addComponent(UIOpacity);tween(op).to(.3,{opacity:0}).call(()=>{L.destroy();this.login=null;if(this.model.lastReward)this.showBattleReward();else if(!this.model.signedToday())this.wf.openWelfare(0);}).start();}
+ private enter(){SESSION.__petGuardiansLoggedIn=true;this.model.loggedIn=true;this.model.save();const L=this.login;if(!L)return;const op=L.addComponent(UIOpacity);tween(op).to(.3,{opacity:0}).call(()=>{L.destroy();this.login=null;if(this.model.lastReward)this.showBattleReward();else if(!this.showNotices()&&!this.model.signedToday())this.wf.openWelfare(0);}).start();}
 }

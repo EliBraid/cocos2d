@@ -4,23 +4,23 @@ format: RGBA8888
 filter: Linear, Linear
 repeat: none
 pma: false
-tail
-bounds: 4, 4, 230, 208
 sword
-bounds: 238, 4, 71, 207
+bounds: 4, 4, 71, 207
 body
-bounds: 313, 4, 171, 204
+bounds: 79, 4, 171, 204
 head
-bounds: 488, 4, 301, 202
+bounds: 254, 4, 301, 202
 arm-near
-bounds: 793, 4, 95, 145
+bounds: 559, 4, 95, 145
 arm-far
-bounds: 892, 4, 94, 141
+bounds: 658, 4, 94, 141
 leg-near
-bounds: 4, 216, 66, 125
+bounds: 756, 4, 66, 125
 leg-far
-bounds: 74, 216, 65, 124
+bounds: 826, 4, 65, 124
+tail
+bounds: 4, 215, 130, 118
 ear-near
-bounds: 143, 216, 95, 116
+bounds: 138, 215, 95, 116
 ear-far
-bounds: 242, 216, 87, 107
+bounds: 237, 215, 87, 107

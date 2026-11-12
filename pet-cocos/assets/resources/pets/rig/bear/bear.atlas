@@ -20,7 +20,7 @@ sword
 bounds: 335, 233, 117, 114
 ear-near
 bounds: 4, 382, 91, 86
-tail
-bounds: 99, 382, 84, 84
 ear-far
-bounds: 187, 382, 87, 80
+bounds: 99, 382, 87, 80
+tail
+bounds: 190, 382, 50, 50

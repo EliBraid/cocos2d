@@ -1,0 +1,16 @@
+# Only the game project and repository documentation belong in this repository.
+/*
+!/.gitignore
+!/README.md
+!/pet-cocos/
+
+# Local credentials and machine-specific files, wherever they appear.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+project.private.config.json
+**/*密钥*
+**/credentials.json
+**/service-account*.json
