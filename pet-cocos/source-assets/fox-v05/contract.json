@@ -1,0 +1,63 @@
+{
+  "version": 5,
+  "canvas": {
+    "width": 1280,
+    "height": 1280,
+    "origin": [
+      660,
+      1180
+    ],
+    "unitsPerPixel": 0.48
+  },
+  "headPivot": {
+    "x": 9.6,
+    "y": 218.4
+  },
+  "targets": {
+    "left": {
+      "ankle": {
+        "x": -74.88,
+        "y": 24
+      },
+      "toe": {
+        "x": -96,
+        "y": 7.199999999999999
+      }
+    },
+    "right": {
+      "ankle": {
+        "x": 98.39999999999999,
+        "y": 38.4
+      },
+      "toe": {
+        "x": 127.19999999999999,
+        "y": 19.2
+      }
+    }
+  },
+  "worldUnitsPerSpineUnit": 0.0059375,
+  "source": {
+    "size": 1024,
+    "halfHeight": 409.6,
+    "center": 280,
+    "worldSize": 4.864,
+    "bottom": -0.6445
+  },
+  "walkDuration": 1,
+  "stride": 0.64,
+  "skins": {
+    "front": [
+      "fox/front",
+      "gear/scarf-front",
+      "gear/sword-front"
+    ],
+    "back": [
+      "fox/back",
+      "gear/scarf-back",
+      "gear/sword-back"
+    ]
+  },
+  "dyeSlots": [
+    "scarf"
+  ]
+}

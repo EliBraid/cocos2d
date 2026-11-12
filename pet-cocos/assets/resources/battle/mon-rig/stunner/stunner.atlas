@@ -1,0 +1,18 @@
+stunner.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+body
+bounds: 2, 2, 267, 256
+top
+bounds: 271, 2, 197, 108
+face-angry
+bounds: 2, 260, 122, 73
+face-hurt
+bounds: 126, 260, 107, 62
+foot-left
+bounds: 235, 260, 71, 53
+foot-right
+bounds: 308, 260, 73, 53

@@ -1,0 +1,3 @@
+import fs from 'node:fs/promises';import {spawnSync} from 'node:child_process';
+const root=new URL('../',import.meta.url),p=JSON.parse(await fs.readFile(new URL('docs/walk-v06/loop-frames/provenance.json',root),'utf8'));
+const r=spawnSync('ffmpeg',['-hide_banner','-loglevel','error','-y','-framerate',String(p.fps),'-i','docs/walk-v06/loop-frames/%03d.png','-filter_complex','[0:v]split[a][b];[a]palettegen=reserve_transparent=1:stats_mode=diff[p];[b][p]paletteuse=alpha_threshold=128:dither=sierra2_4a','-loop','0','docs/walk-v06/fox-walk.gif'],{cwd:new URL('../',import.meta.url),encoding:'utf8'});if(r.status!==0)throw Error(r.stderr);console.log(JSON.stringify({frames:p.frames,fps:p.fps,duration:p.duration}));

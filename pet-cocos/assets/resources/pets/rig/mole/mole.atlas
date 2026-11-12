@@ -1,0 +1,26 @@
+mole.png
+size: 1024, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 285, 240
+body
+bounds: 293, 4, 201, 212
+sword
+bounds: 498, 4, 129, 196
+leg-near
+bounds: 631, 4, 66, 128
+arm-far
+bounds: 701, 4, 93, 125
+arm-near
+bounds: 798, 4, 88, 125
+leg-far
+bounds: 890, 4, 65, 125
+tail
+bounds: 4, 248, 188, 118
+ear-near
+bounds: 196, 248, 84, 82
+ear-far
+bounds: 284, 248, 79, 81

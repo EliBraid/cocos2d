@@ -1,0 +1,180 @@
+<title>萌宠守卫战</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+:root{--ink:#1f201b;--paper:#f9f7ec;--red:#f46f5e;--cyan:#4cd5dc;--muted:#76786a;--gold:#ffc440;--bg:#2a2622}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1a1714}}
+:root[data-theme="dark"]{--bg:#1a1714}
+html,body{height:100%}
+body{margin:0;box-sizing:border-box;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0;background:var(--bg);overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-select:none;font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+#wrap{height:100%;display:flex;align-items:center;justify-content:center}
+#stage{position:relative;flex:none;width:540px;height:960px;transform-origin:center center;overflow:hidden;background:#f7f2e4;box-shadow:0 10px 40px #0006}
+#stage>*{position:absolute}
+#board{left:0;top:0;width:540px;height:960px}
+canvas{left:0;top:0;width:540px;height:960px}
+.box{background:var(--paper);border:2.6px solid var(--ink);border-radius:9px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;color:var(--ink);font-weight:700}
+.btn{cursor:pointer;transition:transform .06s}.btn:active{transform:scale(.97)}
+.red{background:var(--red)}
+.lbl{font-weight:700;color:var(--ink);text-align:center;white-space:nowrap}
+.bar{height:14px;border:1.6px solid var(--ink);border-radius:8px;background:#dedccc;overflow:hidden;box-sizing:border-box}.bar>i{display:block;height:100%;border-radius:6px}
+.card{width:96px;height:92px;border-radius:9px;border:2.4px solid var(--ink);background:#ece9dc;box-sizing:border-box;cursor:pointer;overflow:hidden}
+.card.on{background:#fff}.card.sel{border:4px solid var(--red)}
+.card img{position:absolute;left:11px;top:4px;width:74px;height:64px}
+.card .lv{position:absolute;left:5px;top:2px;font-size:14px;font-weight:800;text-shadow:0 0 3px #fff,0 0 3px #fff}
+.card .cost{position:absolute;left:0;right:0;top:50px;text-align:center;font-size:15px;font-weight:800;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff}
+.card .hp,.card .xp{position:absolute;left:8px;width:76px;border:1.4px solid var(--ink);border-radius:5px;background:#dedccc;overflow:hidden}
+.card .hp{top:70px;height:8px}.card .xp{top:80px;height:6px}.card .hp i{background:#6cc458;display:block;height:100%}.card .xp i{background:var(--gold);display:block;height:100%}
+.dim img{filter:grayscale(1) opacity(.6)}
+#toast{left:50px;width:440px;top:400px;text-align:center;font-size:20px;font-weight:800;color:var(--ink);text-shadow:0 0 4px #fff,0 0 4px #fff,0 0 6px #fff;pointer-events:none;transition:opacity .3s}
+.overlay{left:0;top:0;width:540px;height:960px;background:#1f201b99;display:none;align-items:center;justify-content:center}
+.panel{background:var(--paper);border:3px solid var(--ink);border-radius:12px;padding:22px 26px;width:340px;text-align:center;color:var(--ink)}
+.panel h2{margin:4px 0 6px;font-size:34px}.panel p{margin:6px 0;color:var(--muted);font-size:17px}.panel .stars{font-size:40px;letter-spacing:6px;color:var(--gold);-webkit-text-stroke:1.5px var(--ink)}
+.panel .row{display:flex;gap:14px;justify-content:center;margin-top:16px}.panel .row .box{width:140px;height:48px;font-size:19px}
+#skill{left:238px;top:892px;width:64px;height:64px;border-radius:50%;border:3px solid var(--ink);box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;cursor:pointer;text-shadow:0 1px 2px #0008}
+#loading{left:0;top:0;width:540px;height:960px;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--ink);background:#f7f2e4}
+</style>
+<div id="wrap"><div id="stage">
+<img id="board" alt="" src="__BOARD__">
+<canvas id="ground" width="1080" height="1920"></canvas>
+<canvas id="gl" width="1080" height="1920"></canvas>
+<canvas id="over" width="1080" height="1920"></canvas>
+<div class="box" style="left:6px;top:8px;width:528px;height:56px;justify-content:flex-start;padding-left:14px;font-size:24px">🐾 萌宠守卫战</div>
+<div class="box" style="left:270px;top:16px;width:120px;height:40px;font-size:22px">🪙 <span id="gold">0</span></div>
+<div class="box btn" id="speed" style="left:400px;top:16px;width:52px;height:40px">x1</div>
+<div class="box btn" id="pause" style="left:464px;top:16px;width:52px;height:40px">II</div>
+<div class="box" style="left:10px;top:71px;width:180px;height:34px;font-size:17px">3-5 核心攻坚</div>
+<div class="box" style="left:199px;top:71px;width:170px;height:34px;font-size:17px" id="timer">战斗中 04:00</div>
+<div class="box" style="left:370px;top:71px;width:150px;height:34px;font-size:17px;color:var(--red)" id="kills">击败 0</div>
+<div class="lbl" style="left:210px;top:118px;width:120px;font-size:15px">敌方核心</div>
+<div class="bar" style="left:175px;top:138px;width:190px"><i id="ehp" style="background:var(--red);width:100%"></i></div>
+<div class="lbl" style="left:175px;top:137px;width:190px;font-size:11px;color:#fff;text-shadow:0 0 2px #000" id="ehpt"></div>
+<div class="lbl" style="left:210px;top:746px;width:120px;font-size:15px">我方核心</div>
+<div class="bar" style="left:175px;top:766px;width:190px"><i id="mhp" style="background:var(--cyan);width:100%"></i></div>
+<div class="lbl" style="left:175px;top:765px;width:190px;font-size:11px;color:#fff;text-shadow:0 0 2px #000" id="mhpt"></div>
+<div class="box" style="left:6px;top:780px;width:528px;height:176px;background:#f9f7ecf5"></div>
+<div class="lbl" style="left:18px;top:788px;font-size:19px">🐾 出战宠物 <span style="font-size:13px;color:var(--muted);font-weight:400">每局从Lv.1开始</span></div>
+<div class="lbl" style="left:430px;top:788px;font-size:18px" id="deployed">上阵 0/5</div>
+<div id="cards"></div>
+<div class="box btn" id="stance" style="left:12px;top:909px;width:160px;height:42px;font-size:18px">站位:坚守</div>
+<div id="skill">焰刃</div>
+<div class="box btn red" id="upgrade" style="left:368px;top:909px;width:160px;height:42px;font-size:19px">🪙 强化 80</div>
+<div id="toast"></div>
+<div class="overlay" id="pauseL"><div class="panel"><h2>暂停</h2><div class="row" style="flex-direction:column;align-items:center"><div class="box btn red" id="resume" style="width:200px;height:48px">继续战斗</div><div class="box btn" id="restart1" style="width:200px;height:44px">重新开始</div></div></div></div>
+<div class="overlay" id="result"><div class="panel"><h2 id="rt"></h2><p id="rr"></p><div class="stars" id="rs"></div><p id="rd" style="color:var(--ink);font-weight:700"></p><div class="row"><div class="box btn red" id="again">再来一局</div></div></div></div>
+<div id="loading">加载中…</div>
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/@esotericsoftware/spine-webgl@4.2.73/dist/iife/spine-webgl.min.js"></script>
+<script>__CORE__</script>
+<script>
+const A=__ASSETS__;
+const {Battle,BATTLE}=window.BattleCore;
+const $=id=>document.getElementById(id),stage=$('stage');
+const wrap=$('wrap');function fit(){const s=Math.min(wrap.clientWidth/540,wrap.clientHeight/960);stage.style.transform=`scale(${s})`;}addEventListener('resize',fit);fit();
+const img=src=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.src=src;});
+let battle,speed=1,selected=0,placing=false,toastT=0,views=new Map(),fx=[],texts=[],coins=[],resultShown=false;
+const FOX_SCALE=.19,MIN_SCALE=.5,FOX_STRIDE=0.48/0.0059375*FOX_SCALE,FOX_D=.6;
+const g=$('ground').getContext('2d'),o=$('over').getContext('2d');g.scale(2,2);o.scale(2,2);
+let ctx,sr,fox,minion,IM={};
+async function boot(){
+ IM.red=await img(A.crystalRed);IM.cyan=await img(A.crystal);IM.portal=await img(A.portal);IM.eyes=await img(A.eyes);
+ const canvas=$('gl');ctx=new spine.ManagedWebGLRenderingContext(canvas,{alpha:true,premultipliedAlpha:false});
+ const am=new spine.AssetManager(ctx,'');for(const [k,v] of Object.entries(A.raw))am.setRawDataURI(k,v);
+ am.loadTextureAtlas('ember.atlas');am.loadJson('ember.json');am.loadTextureAtlas('minion.atlas');am.loadJson('minion.json');
+ await new Promise((ok,fail)=>{const t=()=>am.isLoadingComplete()?ok():am.hasErrors()?fail(am.getErrors()):setTimeout(t,30);t();});
+ const read=(j,a,s)=>{const js=new spine.SkeletonJson(new spine.AtlasAttachmentLoader(am.require(a)));js.scale=1;return js.readSkeletonData(am.require(j));};
+ fox=read('ember.json','ember.atlas');minion=read('minion.json','minion.atlas');
+ sr=new spine.SceneRenderer(canvas,ctx,false);sr.camera.position.set(270,480,0);sr.camera.viewportWidth=540;sr.camera.viewportHeight=960;sr.camera.update();
+ buildCards();newBattle();$('loading').style.display='none';requestAnimationFrame(loop);}
+function newBattle(){battle=new Battle(Date.now()%100000);views.clear();fx=[];texts=[];coins=[];selected=0;placing=false;resultShown=false;$('result').style.display='none';$('stance').textContent='站位:坚守';say('点下方卡片，把赤焰小狐放到我方半场',3);}
+function say(s,t=1.5){$('toast').textContent=s;toastT=t;}
+// ------------------------------------------------------------ spine views
+function makeView(u){const pet=u.side==='pet',data=pet?fox:minion,sk=new spine.Skeleton(data);let skin;
+ if(pet){skin=new spine.Skin('c');for(const n of ['fox/front','gear/scarf-front','gear/sword-front'])skin.addSkin(data.findSkin(n));sk.setSkin(skin);}else sk.setSkinByName(u.kind);sk.setSlotsToSetupPose();
+ if(pet)for(const s of ['scarf','scarf-tail'])sk.findSlot(s).color.set(1,.16,.12,1);
+ const sd=new spine.AnimationStateData(data);sd.defaultMix=.08;const st=new spine.AnimationState(sd);
+ const v={sk,st,anim:'',hitT:0,dying:0,alpha:1};if(pet){st.setAnimation(1,'face-focus',true);st.setAnimation(2,'look-center',true);}else play(v,'spawn',false);views.set(u.id,v);return v;}
+function play(v,a,loop=true,ts=1){if(v.anim===a){const e=v.st.getCurrent(0);if(e)e.timeScale=ts;return;}v.anim=a;const e=v.st.setAnimation(0,a,loop);e.timeScale=ts;}
+// ------------------------------------------------------------ events
+function onEvent(e){
+ if(e.type==='deploy'||e.type==='respawn'){const v=views.get(e.pet.id)||makeView(e.pet);v.dying=0;v.alpha=1;v.anim='';v.st.setAnimation(1,'face-focus',true);fx.push({k:'ring',x:e.pet.x,y:e.pet.y,t:0,life:.5,c:'255,196,64',r:30});}
+ else if(e.type==='spawn')makeView(e.monster);
+ else if(e.type==='attack'){const v=views.get(e.unit.id);if(v){v.anim='';play(v,'attack',false);}}
+ else if(e.type==='skill'){const v=views.get(e.pet.id);if(v){v.anim='';play(v,'attack',false);}fx.push({k:'fan',x:e.pet.x,y:e.pet.y-20,t:-BATTLE.skill.windup,life:.35,dir:e.pet.facing,r:BATTLE.skill.radius});}
+ else if(e.type==='hit'){const onPet=battle.pets.some(p=>p.id===e.targetId);text(String(e.amount)+(e.crit?'!':''),e.x,e.y,onPet?'#ff6b5b':e.burn?'#ff8c28':e.crit?'#ffd640':'#fff',e.crit?21:15);const v=views.get(e.targetId);if(v&&battle.monsters.some(m=>m.id===e.targetId)){v.st.setAnimation(1,'hit',false);v.hitT=.25;}}
+ else if(e.type==='death'){const v=views.get(e.unit.id);if(!v)return;if(e.unit.side==='enemy'){v.anim='';play(v,'die',false);v.dying=.6;}else{v.st.setAnimation(1,'face-alert',true);play(v,'hit',false);v.dying=.8;}}
+ else if(e.type==='gold'){coins.push({x:e.x,y:e.y,t:0});text('+'+e.amount,e.x+12,e.y-10,'#ffc440',16);}
+ else if(e.type==='levelup'){text('LV UP!',e.pet.x,e.pet.y-96,'#ffc440',20);fx.push({k:'ring',x:e.pet.x,y:e.pet.y,t:0,life:.6,c:'255,196,64',r:36});}
+ else if(e.type==='core-hit'){const c=e.side==='enemy'?BATTLE.enemyCore:BATTLE.myCore;(e.side==='enemy'?shake:shake2).t=.18;fx.push({k:'flash',x:c.x,y:c.y-30,t:0,life:.18,c:e.side==='enemy'?'244,111,94':'76,213,220',r:50});}
+ else if(e.type==='end')setTimeout(showResult,1200);}
+const shake={t:0},shake2={t:0};
+function text(s,x,y,c,size){texts.push({s,x,y,c,size,t:0,dx:(Math.random()-.5)*16});}
+// ------------------------------------------------------------ frame
+let last=performance.now();
+function loop(now){const dt=Math.min(.1,(now-last)/1000);last=now;const b=battle;b.step(dt*speed);for(const e of b.drain())onEvent(e);draw(b.paused?0:dt*speed,dt);requestAnimationFrame(loop);}
+function draw(dt,rdt){const b=battle;
+ $('gold').textContent=b.gold;$('kills').textContent='击败 '+b.kills;const left=Math.max(0,BATTLE.duration-b.time);$('timer').textContent=`战斗中 ${String(Math.floor(left/60)).padStart(2,'0')}:${String(Math.floor(left%60)).padStart(2,'0')}`;
+ $('ehp').style.width=(100*b.enemyCore.hp/b.enemyCore.maxHp)+'%';$('mhp').style.width=(100*b.myCore.hp/b.myCore.maxHp)+'%';$('ehpt').textContent=`${Math.ceil(b.enemyCore.hp)} / ${b.enemyCore.maxHp}`;$('mhpt').textContent=`${Math.ceil(b.myCore.hp)} / ${b.myCore.maxHp}`;
+ // ground layer
+ g.clearRect(0,0,540,960);const t=performance.now()/1000;
+ for(const p of BATTLE.portals){g.save();g.translate(p.x,p.y);g.scale(1,.62);g.rotate(-t*1.2);g.drawImage(IM.portal,-56,-56,112,112);g.restore();g.drawImage(IM.eyes,p.x-56,p.y-56,112,112);}
+ shake.t=Math.max(0,shake.t-dt);shake2.t=Math.max(0,shake2.t-dt);
+ g.drawImage(IM.red,BATTLE.enemyCore.x-59+(shake.t?Math.sin(shake.t*90)*3:0),BATTLE.enemyCore.y-30-58,118,116);
+ g.drawImage(IM.cyan,BATTLE.myCore.x-59+(shake2.t?Math.sin(shake2.t*90)*3:0),BATTLE.myCore.y-30-58,118,116);
+ if(placing||selected){g.strokeStyle='rgba(64,160,170,.7)';g.lineWidth=3;g.setLineDash([10,12]);g.beginPath();g.moveTo(BATTLE.board.left+16,BATTLE.deployTop);g.lineTo(BATTLE.board.right-16,BATTLE.deployTop);g.stroke();g.setLineDash([]);
+  if(placing){g.fillStyle='rgba(76,213,220,.15)';g.fillRect(BATTLE.board.left+16,BATTLE.deployTop,BATTLE.board.right-BATTLE.board.left-32,BATTLE.board.bottom-20-BATTLE.deployTop);}}
+ const alive=[];
+ for(const p of b.pets){const v=views.get(p.id);if(!v)continue;if(p.state==='dead'){if(v.dying>0){v.dying-=dt;v.alpha=Math.max(0,v.dying/.8);alive.push({u:p,v,ghost:true});}continue;}
+  if(p.state==='move')play(v,'walk',true,p.speed/(FOX_STRIDE/FOX_D));else if(p.state==='idle'&&(v.anim!=='attack'||v.st.getCurrent(0).isComplete()))play(v,'idle');alive.push({u:p,v});}
+ for(const m of b.monsters){const v=views.get(m.id);if(!v)continue;if(v.hitT>0){v.hitT-=dt;if(v.hitT<=0)v.st.clearTrack(1);}
+  if(m.state==='dead'){v.dying-=dt;if(v.dying>0)alive.push({u:m,v,ghost:true});continue;}
+  if(m.state==='move')play(v,'walk',true,m.speed/34);else if(m.state==='idle'&&(v.anim==='spawn'||v.anim==='walk'||v.st.getCurrent(0).isComplete()))play(v,'idle');alive.push({u:m,v});}
+ for(const id of [...views.keys()])if(!b.monsters.some(m=>m.id===id)&&!b.pets.some(p=>p.id===id))views.delete(id);
+ alive.sort((a,c)=>a.u.y-c.u.y);
+ for(const {u,ghost} of alive)if(!ghost){g.fillStyle='rgba(42,26,18,.19)';g.beginPath();g.ellipse(u.x,u.y,u.radius*1.25,u.radius*.45,0,0,Math.PI*2);g.fill();}
+ const sel=b.pets.find(p=>p.id===selected&&p.state!=='dead');if(sel){g.strokeStyle='rgba(244,111,94,.9)';g.lineWidth=3;g.beginPath();g.ellipse(sel.x,sel.y,30,11,0,0,Math.PI*2);g.stroke();if(b.stance==='hold'){g.strokeStyle='rgba(244,111,94,.5)';g.beginPath();g.arc(sel.post.x,sel.post.y,8,0,7);g.stroke();}}
+ // spine
+ const gl=ctx.gl;gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);sr.begin();
+ for(const {u,v} of alive){const s=u.side==='pet'?FOX_SCALE:MIN_SCALE*(u.kind==='elite'?1.4:1);v.st.update(dt);v.st.apply(v.sk);v.sk.scaleX=u.facing*s;v.sk.scaleY=s;v.sk.x=u.x;v.sk.y=960-u.y;v.sk.color.a=v.alpha;v.sk.updateWorldTransform(spine.Physics.update);sr.drawSkeleton(v.sk,false);}
+ sr.end();
+ // overlay: bars, labels, fx, texts, coins
+ o.clearRect(0,0,540,960);
+ for(const {u,ghost} of alive){if(ghost)continue;const top=u.side==='pet'?96:u.radius*2.6+14,w=u.side==='pet'?46:u.radius*2.2,x=u.x-w/2,y=u.y-top;
+  o.fillStyle='#2a1a12';o.fillRect(x-1.5,y-1.5,w+3,9);o.fillStyle=u.side==='pet'?'#6cc458':'#e54034';o.fillRect(x,y,w*Math.max(0,u.hp/u.maxHp),6);
+  if(u.side==='pet'){o.font='800 14px sans-serif';o.textAlign='center';o.lineWidth=3;o.strokeStyle='#fff';o.strokeText('Lv.'+u.level,u.x,y-6);o.fillStyle='#2a1a12';o.fillText('Lv.'+u.level,u.x,y-6);}}
+ fx=fx.filter(x=>(x.t+=dt)<x.life);for(const x of fx){if(x.t<0)continue;const k=x.t/x.life,a=1-k;
+  if(x.k==='ring'){o.strokeStyle=`rgba(${x.c},${a})`;o.lineWidth=4;o.beginPath();o.ellipse(x.x,x.y,x.r*(.6+k),x.r*(.6+k)*.42,0,0,7);o.stroke();}
+  else if(x.k==='flash'){o.fillStyle=`rgba(${x.c},${a*.45})`;o.beginPath();o.arc(x.x,x.y,x.r*(.8+k*.4),0,7);o.fill();}
+  else{const d=x.dir||1,r=x.r*(.55+.45*k);o.beginPath();o.moveTo(x.x,x.y);for(let i=0;i<=16;i++){const an=(-75+150*i/16)*Math.PI/180;o.lineTo(x.x+Math.cos(an)*r*d,x.y-Math.sin(an)*r*.6);}o.closePath();o.fillStyle=`rgba(255,122,28,${a*.55})`;o.fill();o.strokeStyle=`rgba(255,214,74,${a})`;o.lineWidth=4;o.stroke();}}
+ texts=texts.filter(x=>(x.t+=rdt*(b.paused?0:1))<.7);for(const x of texts){o.globalAlpha=x.t<.35?1:1-(x.t-.35)/.35;o.font=`900 ${x.size}px sans-serif`;o.textAlign='center';o.lineWidth=4;o.strokeStyle='#2a1a12';const yy=x.y-30*x.t/.7;o.strokeText(x.s,x.x+x.dx*x.t,yy);o.fillStyle=x.c;o.fillText(x.s,x.x+x.dx*x.t,yy);}o.globalAlpha=1;
+ coins=coins.filter(c=>(c.t+=dt)<.68);for(const c of coins){const k=c.t<.18?0:(c.t-.18)/.5,e=k*k,x=c.x+(292-c.x)*e,y=(c.y-18*Math.min(1,c.t/.18))+(36-(c.y-18))*e;o.fillStyle='#ffd050';o.strokeStyle='#1f201b';o.lineWidth=2;o.beginPath();o.arc(x,y,9,0,7);o.fill();o.stroke();}
+ // deck
+ $('deployed').textContent=`上阵 ${b.pets.length}/5`;
+ cards.forEach((c,i)=>{const p=b.pets.find(p=>p.slot===i),next=i===b.pets.length;c.el.className='card'+(p?' on':'')+(p&&p.id===selected?' sel':'')+(!p||p.state==='dead'?' dim':'');
+  c.lv.textContent=p?(p.state==='dead'?`复活 ${Math.ceil(p.respawnT)}`:'Lv.'+p.level):'';c.cost.textContent=p?'':next?`上阵 ${b.deployCost}`:'未解锁';c.cost.style.color=next&&b.gold>=b.deployCost?'#1f201b':'#76786a';
+  c.hp.style.width=(p?100*p.hp/p.maxHp:0)+'%';c.xp.style.width=(p?(p.level>=BATTLE.maxLevel?100:100*p.xp/BATTLE.xpToNext(p.level)):0)+'%';});
+ const tg=target();$('upgrade').textContent=tg?(tg.level>=BATTLE.maxLevel?'已满级':`🪙 强化 ${b.upgradeCost(tg)}`):'🪙 强化';
+ const ready=b.skillReady(),frac=b.skillCd/BATTLE.skill.cooldown;$('skill').style.background=frac>0?`conic-gradient(#8e8478 ${frac*360}deg, #f46f5e 0)`:(ready?'#f46f5e':'#968c82');$('skill').textContent=frac>0?Math.ceil(b.skillCd)+'秒':'焰刃';
+ if(toastT>0){toastT-=rdt;}$('toast').style.opacity=Math.min(1,Math.max(0,toastT*3));}
+function target(){const b=battle;return b.pets.find(p=>p.id===selected)||[...b.pets].sort((a,c)=>a.level-c.level)[0];}
+// ------------------------------------------------------------ input
+const cards=[];function buildCards(){const box=$('cards');for(let i=0;i<5;i++){const el=document.createElement('div');el.className='card';el.style.cssText=`position:absolute;left:${10+i*106}px;top:812px`;
+ el.innerHTML=`<img src="${A.avatar}"><div class="lv"></div><div class="cost"></div><div class="hp"><i></i></div><div class="xp"><i></i></div>`;box.appendChild(el);
+ cards.push({el,lv:el.querySelector('.lv'),cost:el.querySelector('.cost'),hp:el.querySelector('.hp i'),xp:el.querySelector('.xp i')});el.addEventListener('click',e=>{e.stopPropagation();cardTap(i);});}}
+function cardTap(i){const b=battle;if(b.state!=='running')return;const pet=b.pets.find(p=>p.slot===i);if(pet){selected=pet.id;placing=false;say(pet.state==='dead'?'复活中…':'点我方半场空地可以调整它的站位',1.6);return;}
+ if(i!==b.pets.length)return cardTap(b.pets.length);if(b.gold<b.deployCost){say(`金币不足，上阵需要 ${b.deployCost}`,1.6);return;}placing=true;selected=0;say('点虚线下方的空地放置',2);}
+$('over').addEventListener('click',e=>{const r=stage.getBoundingClientRect(),x=(e.clientX-r.left)*540/r.width,y=(e.clientY-r.top)*960/r.height;const b=battle;if(b.state!=='running'||y>780)return;
+ if(placing){const p=b.deploy({x,y});if(p){placing=false;selected=p.id;}else say('只能放在我方半场（虚线下方）',1.6);return;}
+ const hit=b.pets.find(p=>p.state!=='dead'&&Math.hypot(p.x-x,p.y-30-y)<38);if(hit){selected=hit.id;return;}
+ if(selected&&b.movePost(selected,{x,y})){fx.push({k:'ring',x,y,t:0,life:.45,c:'76,213,220',r:22});return;}selected=0;});
+$('stance').onclick=()=>{const s=battle.stance==='hold'?'charge':'hold';battle.setStance(s);$('stance').textContent=s==='hold'?'站位:坚守':'站位:进攻';say(s==='hold'?'宠物守在自己的站位附近':'宠物向敌方核心推进！',1.6);};
+$('skill').onclick=()=>{if(battle.castSkill())say('焰刃！',1);else if(battle.skillCd>0)say('焰刃冷却中',1);};
+$('upgrade').onclick=()=>{const p=target();if(!p)return say('先上阵一只宠物',1.4);if(p.level>=BATTLE.maxLevel)return say('已经满级',1.2);if(!battle.upgrade(p.id))say(`金币不足，需要 ${battle.upgradeCost(p)}`,1.4);};
+$('speed').onclick=()=>{speed=speed===1?2:1;$('speed').textContent='x'+speed;};
+$('pause').onclick=()=>{battle.paused=true;$('pauseL').style.display='flex';};$('resume').onclick=()=>{battle.paused=false;$('pauseL').style.display='none';};
+$('restart1').onclick=()=>{$('pauseL').style.display='none';newBattle();};$('again').onclick=newBattle;
+function showResult(){if(resultShown)return;resultShown=true;const r=battle.result;$('rt').textContent=r.win?'胜利！':'核心失守';$('rt').style.color=r.win?'var(--red)':'var(--ink)';
+ $('rr').textContent=r.reason==='destroyed-enemy-core'?'摧毁了敌方核心':r.reason==='survived'?'守住了我方核心':'我方核心被摧毁';$('rs').textContent='★'.repeat(r.stars)+'☆'.repeat(3-r.stars);
+ $('rd').textContent=`击败 ${r.kills}　金币 +${r.goldEarned}　用时 ${Math.floor(r.time/60)}:${String(Math.floor(r.time%60)).padStart(2,'0')}`;$('result').style.display='flex';
+ for(const p of battle.pets){const v=views.get(p.id);if(v&&p.state!=='dead'){v.anim='';play(v,r.win?'happy':'hit',true);v.st.setAnimation(1,r.win?'face-happy':'face-alert',true);}}}
+window.__game={get battle(){return battle},cardTap,deployAt:(x,y)=>battle.deploy({x,y}),setSpeed:s=>{speed=s;$('speed').textContent='x'+s;}};
+boot().catch(e=>{$('loading').textContent='加载失败：'+e;console.error(e);});
+</script>

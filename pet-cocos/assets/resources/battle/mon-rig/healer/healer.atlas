@@ -1,0 +1,18 @@
+healer.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+body
+bounds: 2, 2, 233, 245
+top
+bounds: 237, 2, 226, 122
+face-angry
+bounds: 2, 249, 121, 72
+face-hurt
+bounds: 125, 249, 104, 68
+foot-left
+bounds: 231, 249, 69, 53
+foot-right
+bounds: 302, 249, 69, 53
