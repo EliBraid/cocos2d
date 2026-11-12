@@ -1,0 +1,24 @@
+tiger.png
+size: 1024, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+tail
+bounds: 4, 4, 230, 207
+body
+bounds: 238, 4, 167, 204
+head
+bounds: 409, 4, 328, 183
+arm-near
+bounds: 741, 4, 91, 164
+arm-far
+bounds: 836, 4, 99, 155
+leg-far
+bounds: 939, 4, 64, 138
+leg-near
+bounds: 4, 215, 66, 135
+ear-near
+bounds: 74, 215, 102, 125
+ear-far
+bounds: 180, 215, 87, 110

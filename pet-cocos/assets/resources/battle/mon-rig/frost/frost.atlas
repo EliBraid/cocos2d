@@ -1,0 +1,18 @@
+frost.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+body
+bounds: 2, 2, 248, 220
+top
+bounds: 252, 2, 227, 122
+face-angry
+bounds: 2, 224, 118, 71
+face-hurt
+bounds: 122, 224, 117, 66
+foot-left
+bounds: 241, 224, 76, 48
+foot-right
+bounds: 319, 224, 75, 48

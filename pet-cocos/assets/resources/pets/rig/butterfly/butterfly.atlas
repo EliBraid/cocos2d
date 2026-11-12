@@ -1,0 +1,22 @@
+butterfly.png
+size: 1024, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 259, 240
+sword
+bounds: 267, 4, 115, 207
+tail
+bounds: 386, 4, 218, 198
+body
+bounds: 608, 4, 211, 195
+leg-far
+bounds: 823, 4, 56, 138
+leg-near
+bounds: 883, 4, 57, 138
+arm-near
+bounds: 4, 248, 82, 112
+arm-far
+bounds: 90, 248, 86, 110

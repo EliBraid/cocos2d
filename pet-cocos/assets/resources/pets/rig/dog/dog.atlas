@@ -1,0 +1,26 @@
+dog.png
+size: 1024, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 259, 228
+sword
+bounds: 267, 4, 124, 173
+body
+bounds: 395, 4, 211, 156
+tail
+bounds: 610, 4, 131, 143
+ear-near
+bounds: 745, 4, 104, 115
+arm-far
+bounds: 853, 4, 93, 113
+arm-near
+bounds: 4, 236, 92, 113
+leg-near
+bounds: 100, 236, 66, 109
+leg-far
+bounds: 170, 236, 65, 102
+ear-far
+bounds: 239, 236, 87, 95

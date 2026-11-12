@@ -1,0 +1,16 @@
+bat.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+body
+bounds: 4, 4, 250, 234
+wing-near
+bounds: 258, 4, 219, 147
+wing-far
+bounds: 4, 242, 211, 147
+item
+bounds: 219, 242, 92, 104
+feet
+bounds: 315, 242, 105, 80
