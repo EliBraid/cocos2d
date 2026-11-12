@@ -1,0 +1,26 @@
+stardragon.png
+size: 1024, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 287, 220
+tail
+bounds: 295, 4, 222, 194
+body
+bounds: 521, 4, 152, 178
+sword
+bounds: 677, 4, 110, 178
+leg-far
+bounds: 791, 4, 60, 138
+leg-near
+bounds: 855, 4, 60, 138
+ear-near
+bounds: 919, 4, 98, 132
+ear-far
+bounds: 4, 228, 87, 122
+arm-near
+bounds: 95, 228, 84, 112
+arm-far
+bounds: 183, 228, 86, 111

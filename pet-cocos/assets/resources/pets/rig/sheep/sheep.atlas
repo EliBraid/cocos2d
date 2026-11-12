@@ -1,0 +1,26 @@
+sheep.png
+size: 1024, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 265, 238
+sword
+bounds: 273, 4, 81, 207
+body
+bounds: 358, 4, 211, 173
+leg-far
+bounds: 573, 4, 64, 138
+leg-near
+bounds: 641, 4, 65, 138
+arm-far
+bounds: 710, 4, 88, 114
+arm-near
+bounds: 802, 4, 88, 114
+ear-near
+bounds: 894, 4, 104, 102
+tail
+bounds: 4, 246, 96, 96
+ear-far
+bounds: 104, 246, 87, 84

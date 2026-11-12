@@ -1,0 +1,42 @@
+minion.png
+size: 1024, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+fuzz-body
+bounds: 4, 4, 250, 228
+elite-body
+bounds: 258, 4, 250, 228
+shroom-body
+bounds: 512, 4, 136, 143
+shroom-top
+bounds: 652, 4, 254, 140
+elite-top
+bounds: 4, 236, 254, 138
+fuzz-top
+bounds: 262, 236, 142, 76
+elite-face-angry
+bounds: 408, 236, 126, 75
+fuzz-face-angry
+bounds: 538, 236, 116, 70
+elite-face-hurt
+bounds: 658, 236, 104, 66
+fuzz-face-hurt
+bounds: 766, 236, 98, 62
+shroom-face-angry
+bounds: 868, 236, 86, 53
+shroom-face-hurt
+bounds: 4, 378, 72, 47
+fuzz-foot-left
+bounds: 80, 378, 60, 38
+fuzz-foot-right
+bounds: 144, 378, 60, 38
+shroom-foot-left
+bounds: 208, 378, 60, 38
+shroom-foot-right
+bounds: 272, 378, 60, 38
+elite-foot-left
+bounds: 336, 378, 60, 38
+elite-foot-right
+bounds: 400, 378, 60, 38

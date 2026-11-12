@@ -1,0 +1,18 @@
+shroom.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+body
+bounds: 2, 2, 254, 224
+top
+bounds: 258, 2, 224, 122
+face-angry
+bounds: 2, 228, 120, 78
+face-hurt
+bounds: 124, 228, 110, 76
+foot-left
+bounds: 236, 228, 68, 53
+foot-right
+bounds: 306, 228, 69, 53

@@ -1,0 +1,26 @@
+bear.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 277, 225
+body
+bounds: 285, 4, 211, 207
+arm-near
+bounds: 4, 233, 93, 145
+arm-far
+bounds: 101, 233, 91, 140
+leg-far
+bounds: 196, 233, 65, 120
+leg-near
+bounds: 265, 233, 66, 118
+sword
+bounds: 335, 233, 117, 114
+ear-near
+bounds: 4, 382, 91, 86
+ear-far
+bounds: 99, 382, 87, 80
+tail
+bounds: 190, 382, 50, 50
