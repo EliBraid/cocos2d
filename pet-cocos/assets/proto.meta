@@ -1,0 +1,14 @@
+{
+  "ver": "1.2.0",
+  "importer": "directory",
+  "imported": true,
+  "uuid": "88d5e514-038e-4c8c-9bca-ffe8ee403f29",
+  "files": [],
+  "subMetas": {},
+  "userData": {
+    "isBundle": true,
+    "bundleName": "proto",
+    "priority": 1,
+    "bundleConfigID": "proto-remote"
+  }
+}

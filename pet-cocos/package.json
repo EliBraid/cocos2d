@@ -1,0 +1,33 @@
+{
+  "name": "pet-guardians-single-fox",
+  "version": "0.6.0",
+  "type": "module",
+  "uuid": "72ab46ce-1784-4e49-85d9-8ba32537964c",
+  "creator": {
+    "version": "3.8.8"
+  },
+  "scripts": {
+    "test": "node --import ./tests/register-ts.mjs --test tests/*.test.mjs",
+    "rig:build": "node tools/build-fox.mjs",
+    "verify:runtime": "node tools/verify.mjs",
+    "build": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/build.ps1",
+    "forest:assets": "node tools/build-fox-v05-art.mjs && node tools/build-fox-continuous.mjs && node tools/build-authored-walk-v054.mjs && node tools/build-arm-rear-v055.mjs && node tools/build-walk-v06.mjs",
+    "verify:forest": "node tools/verify-forest-v05.mjs",
+    "walk:build": "node tools/build-walk-v06.mjs",
+    "ember:build": "node tools/ember-fox/build.mjs assets/resources/forest/ember assets/scripts/EmberRig.ts",
+    "battle:assets": "node tools/minions/build.mjs assets/resources/battle/minion && node tools/minions/board.mjs assets/resources/battle assets/resources/art/crystal.png",
+    "ui:kit": "node tools/ui-kit/ui-kit.mjs assets/resources/ui assets/scripts/ui/UISkin.ts docs/ui-kit/ui-kit-sheet.png",
+    "art:import": "node tools/imagegen/import-art.mjs",
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "devDependencies": {
+    "@esotericsoftware/spine-core": "^4.2.74",
+    "@resvg/resvg-js": "^2.6.2",
+    "playwright": "1.58.2",
+    "sharp": "0.34.5",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

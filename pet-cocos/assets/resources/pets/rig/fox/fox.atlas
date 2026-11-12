@@ -1,0 +1,26 @@
+fox.png
+size: 1024, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+tail
+bounds: 4, 4, 230, 227
+head
+bounds: 238, 4, 279, 200
+body
+bounds: 521, 4, 211, 195
+sword
+bounds: 736, 4, 121, 178
+leg-near
+bounds: 861, 4, 63, 138
+leg-far
+bounds: 928, 4, 65, 137
+arm-far
+bounds: 4, 235, 90, 127
+ear-near
+bounds: 98, 235, 104, 124
+arm-near
+bounds: 206, 235, 93, 124
+ear-far
+bounds: 303, 235, 87, 107

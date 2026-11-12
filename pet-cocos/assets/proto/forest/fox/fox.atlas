@@ -1,0 +1,156 @@
+fox.png
+size: 2048, 4096
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+arm-back-left
+bounds: 4, 4, 230, 467
+offsets: 0, 0, 230, 467
+rotate: false
+index: -1
+arm-back-right
+bounds: 238, 4, 283, 416
+offsets: 0, 0, 283, 416
+rotate: false
+index: -1
+arm-front-left
+bounds: 525, 4, 222, 447
+offsets: 0, 0, 222, 447
+rotate: false
+index: -1
+arm-front-right
+bounds: 751, 4, 306, 406
+offsets: 0, 0, 306, 406
+rotate: false
+index: -1
+back-scarf
+bounds: 1061, 4, 722, 250
+offsets: 0, 0, 722, 250
+rotate: false
+index: -1
+back-shell
+bounds: 4, 475, 1252, 1239
+offsets: 0, 0, 1252, 1239
+rotate: false
+index: -1
+brooch
+bounds: 1260, 475, 184, 159
+offsets: 0, 0, 184, 159
+rotate: false
+index: -1
+brow-left
+bounds: 1448, 475, 37, 22
+offsets: 0, 0, 37, 22
+rotate: false
+index: -1
+brow-right
+bounds: 1489, 475, 24, 22
+offsets: 0, 0, 24, 22
+rotate: false
+index: -1
+empty
+bounds: 1517, 475, 2, 2
+offsets: 0, 0, 2, 2
+rotate: false
+index: -1
+eye-closed-left
+bounds: 1523, 475, 215, 85
+offsets: 0, 0, 215, 85
+rotate: false
+index: -1
+eye-closed-right
+bounds: 1742, 475, 188, 85
+offsets: 0, 0, 188, 85
+rotate: false
+index: -1
+eye-curious-left
+bounds: 4, 1718, 138, 189
+offsets: 0, 0, 138, 189
+rotate: false
+index: -1
+eye-curious-right
+bounds: 146, 1718, 139, 191
+offsets: 0, 0, 139, 191
+rotate: false
+index: -1
+eye-left
+bounds: 289, 1718, 70, 100
+offsets: 0, 0, 70, 100
+rotate: false
+index: -1
+eye-right
+bounds: 363, 1718, 82, 93
+offsets: 0, 0, 82, 93
+rotate: false
+index: -1
+fox-sword-clean
+bounds: 449, 1718, 153, 483
+offsets: 0, 0, 153, 483
+rotate: false
+index: -1
+head
+bounds: 606, 1718, 715, 651
+offsets: 0, 0, 715, 651
+rotate: false
+index: -1
+mouth
+bounds: 1325, 1718, 84, 46
+offsets: 0, 0, 84, 46
+rotate: false
+index: -1
+mouth-alert
+bounds: 1413, 1718, 125, 161
+offsets: 0, 0, 125, 161
+rotate: false
+index: -1
+mouth-happy
+bounds: 1542, 1718, 288, 151
+offsets: 0, 0, 288, 151
+rotate: false
+index: -1
+nose
+bounds: 1834, 1718, 42, 27
+offsets: 0, 0, 42, 27
+rotate: false
+index: -1
+scarf
+bounds: 4, 2373, 754, 231
+offsets: 0, 0, 754, 231
+rotate: false
+index: -1
+tail
+bounds: 762, 2373, 461, 521
+offsets: 0, 0, 461, 521
+rotate: false
+index: -1
+walk-left-back
+bounds: 1227, 2373, 269, 571
+offsets: 0, 0, 269, 571
+rotate: false
+index: -1
+walk-left-front
+bounds: 1500, 2373, 324, 571
+offsets: 0, 0, 324, 571
+rotate: false
+index: -1
+walk-right-back
+bounds: 4, 2948, 296, 571
+offsets: 0, 0, 296, 571
+rotate: false
+index: -1
+walk-right-front
+bounds: 304, 2948, 297, 566
+offsets: 0, 0, 297, 566
+rotate: false
+index: -1
+walk-torso-back
+bounds: 605, 2948, 518, 423
+offsets: 0, 0, 518, 423
+rotate: false
+index: -1
+walk-torso-front
+bounds: 1127, 2948, 618, 678
+offsets: 0, 0, 618, 678
+rotate: false
+index: -1

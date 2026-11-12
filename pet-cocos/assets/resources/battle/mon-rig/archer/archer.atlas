@@ -1,0 +1,18 @@
+archer.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+body
+bounds: 2, 2, 277, 252
+top
+bounds: 281, 2, 186, 122
+face-angry
+bounds: 2, 256, 118, 72
+face-hurt
+bounds: 122, 256, 123, 71
+foot-left
+bounds: 247, 256, 62, 53
+foot-right
+bounds: 311, 256, 62, 53

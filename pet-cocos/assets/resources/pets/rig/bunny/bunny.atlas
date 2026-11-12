@@ -1,0 +1,26 @@
+bunny.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 266, 208
+body
+bounds: 274, 4, 174, 206
+sword
+bounds: 4, 216, 123, 159
+arm-far
+bounds: 131, 216, 95, 119
+tail
+bounds: 230, 216, 122, 118
+leg-near
+bounds: 356, 216, 66, 118
+leg-far
+bounds: 426, 216, 65, 115
+arm-near
+bounds: 4, 379, 93, 113
+ear-far
+bounds: 101, 379, 80, 109
+ear-near
+bounds: 185, 379, 82, 109

@@ -1,0 +1,46 @@
+{
+  "platform": "wechatgame",
+  "debug": false,
+  "name": "灵爪守望",
+  "outputName": "wechatgame",
+  "buildPath": "project://build",
+  "startScene": "7f0568be-0d6e-45e0-b42d-0b927b474ff5",
+  "scenes": [
+    {
+      "url": "db://assets/scenes/Home.scene",
+      "uuid": "7f0568be-0d6e-45e0-b42d-0b927b474ff5"
+    },
+    {
+      "url": "db://assets/scenes/Battle.scene",
+      "uuid": "3eb66736-6faa-4310-9fe0-6915a8a2b0cf"
+    }
+  ],
+  "includedModules": [
+    "base",
+    "gfx-webgl",
+    "gfx-webgl2",
+    "2d",
+    "ui",
+    "graphics",
+    "mask",
+    "rich-text",
+    "animation",
+    "tween",
+    "3d",
+    "primitive",
+    "spine-4.2",
+    "custom-pipeline"
+  ],
+  "packages": {
+    "wechatgame": {
+      "appid": "wx9ea25c180c4fa5c2",
+      "orientation": "portrait",
+      "separateEngine": false,
+      "buildOpenDataContextTemplate": false,
+      "highPerformanceMode": false,
+      "remoteServerAddress": ""
+    }
+  },
+  "sourceMaps": false,
+  "md5Cache": true
+}
