@@ -1,0 +1,18 @@
+starmage.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+body
+bounds: 2, 2, 303, 241
+top
+bounds: 307, 2, 192, 122
+face-angry
+bounds: 2, 245, 118, 73
+face-hurt
+bounds: 122, 245, 123, 62
+foot-left
+bounds: 247, 245, 63, 53
+foot-right
+bounds: 312, 245, 62, 53

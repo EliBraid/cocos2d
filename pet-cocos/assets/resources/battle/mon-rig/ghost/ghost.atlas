@@ -1,0 +1,18 @@
+ghost.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+body
+bounds: 2, 2, 293, 236
+top
+bounds: 297, 2, 80, 122
+face-angry
+bounds: 379, 2, 118, 80
+face-hurt
+bounds: 2, 240, 110, 71
+foot-left
+bounds: 114, 240, 58, 53
+foot-right
+bounds: 174, 240, 57, 53

@@ -1,0 +1,18 @@
+warden.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+body
+bounds: 2, 2, 280, 249
+face-angry
+bounds: 284, 2, 114, 77
+face-hurt
+bounds: 2, 253, 119, 73
+top
+bounds: 123, 253, 220, 67
+foot-left
+bounds: 345, 253, 68, 53
+foot-right
+bounds: 415, 253, 69, 53

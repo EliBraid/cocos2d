@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {SupportHeight} from '../assets/scripts/PetMotion.ts';
+test('the body follows the two feet rather than snapping an entire tread height',()=>{const h=new SupportHeight();h.update(0,0,0);const first=h.update(0,.12,1/60);assert.ok(first>0&&first<.02);for(let i=0;i<60;i++)h.update(0,.12,1/60);assert.ok(Math.abs(h.value-.06)<.00001);});
+test('a pet straddling two steps settles between them without overshoot',()=>{const h=new SupportHeight();h.update(.36,.48,0);assert.equal(h.value,.42);for(let i=0;i<120;i++){h.update(.48,.6,1/60);assert.ok(h.value<=.54);}assert.ok(Math.abs(h.value-.54)<1e-6);});

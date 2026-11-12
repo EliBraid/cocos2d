@@ -1,0 +1,262 @@
+{
+  "front": [
+    {
+      "name": "head",
+      "bounds": {
+        "left": 25,
+        "top": 45,
+        "width": 351,
+        "height": 314
+      }
+    },
+    {
+      "name": "ear-left",
+      "bounds": {
+        "left": 404,
+        "top": 54,
+        "width": 212,
+        "height": 296
+      }
+    },
+    {
+      "name": "ear-right",
+      "bounds": {
+        "left": 669,
+        "top": 57,
+        "width": 217,
+        "height": 299
+      }
+    },
+    {
+      "name": "torso",
+      "bounds": {
+        "left": 946,
+        "top": 94,
+        "width": 280,
+        "height": 249
+      }
+    },
+    {
+      "name": "upper-left",
+      "bounds": {
+        "left": 63,
+        "top": 407,
+        "width": 206,
+        "height": 218
+      }
+    },
+    {
+      "name": "upper-right",
+      "bounds": {
+        "left": 386,
+        "top": 408,
+        "width": 205,
+        "height": 219
+      }
+    },
+    {
+      "name": "fore-left",
+      "bounds": {
+        "left": 683,
+        "top": 414,
+        "width": 207,
+        "height": 205
+      }
+    },
+    {
+      "name": "fore-right",
+      "bounds": {
+        "left": 989,
+        "top": 413,
+        "width": 211,
+        "height": 200
+      }
+    },
+    {
+      "name": "leg-left",
+      "bounds": {
+        "left": 56,
+        "top": 652,
+        "width": 209,
+        "height": 269
+      }
+    },
+    {
+      "name": "leg-right",
+      "bounds": {
+        "left": 353,
+        "top": 653,
+        "width": 212,
+        "height": 270
+      }
+    },
+    {
+      "name": "tail",
+      "bounds": {
+        "left": 616,
+        "top": 630,
+        "width": 366,
+        "height": 323
+      }
+    },
+    {
+      "name": "scarf",
+      "bounds": {
+        "left": 921,
+        "top": 662,
+        "width": 320,
+        "height": 272
+      }
+    },
+    {
+      "name": "knot",
+      "bounds": {
+        "left": 22,
+        "top": 1020,
+        "width": 286,
+        "height": 175
+      }
+    },
+    {
+      "name": "eyes-open",
+      "bounds": {
+        "left": 354,
+        "top": 1022,
+        "width": 230,
+        "height": 152
+      }
+    },
+    {
+      "name": "eyes-closed",
+      "bounds": {
+        "left": 662,
+        "top": 1034,
+        "width": 246,
+        "height": 112
+      }
+    },
+    {
+      "name": "mouth",
+      "bounds": {
+        "left": 1032,
+        "top": 1064,
+        "width": 130,
+        "height": 69
+      }
+    }
+  ],
+  "back": [
+    {
+      "name": "head-back",
+      "bounds": {
+        "left": 57,
+        "top": 94,
+        "width": 572,
+        "height": 563
+      }
+    },
+    {
+      "name": "torso-back",
+      "bounds": {
+        "left": 686,
+        "top": 315,
+        "width": 554,
+        "height": 345
+      }
+    },
+    {
+      "name": "tail-back",
+      "bounds": {
+        "left": 66,
+        "top": 688,
+        "width": 560,
+        "height": 476
+      }
+    },
+    {
+      "name": "legs-back",
+      "bounds": {
+        "left": 704,
+        "top": 762,
+        "width": 407,
+        "height": 400
+      }
+    }
+  ],
+  "plants": [
+    {
+      "name": "tree-left",
+      "bounds": {
+        "left": 37,
+        "top": 30,
+        "width": 594,
+        "height": 653
+      }
+    },
+    {
+      "name": "tree-right",
+      "bounds": {
+        "left": 655,
+        "top": 25,
+        "width": 569,
+        "height": 663
+      }
+    },
+    {
+      "name": "grass",
+      "bounds": {
+        "left": 40,
+        "top": 748,
+        "width": 560,
+        "height": 454
+      }
+    },
+    {
+      "name": "fern",
+      "bounds": {
+        "left": 629,
+        "top": 746,
+        "width": 595,
+        "height": 455
+      }
+    }
+  ],
+  "props": [
+    {
+      "name": "torch",
+      "bounds": {
+        "left": 119,
+        "top": 33,
+        "width": 367,
+        "height": 608
+      }
+    },
+    {
+      "name": "rocks",
+      "bounds": {
+        "left": 650,
+        "top": 198,
+        "width": 605,
+        "height": 421
+      }
+    },
+    {
+      "name": "flame-a",
+      "bounds": {
+        "left": 145,
+        "top": 663,
+        "width": 425,
+        "height": 517
+      }
+    },
+    {
+      "name": "flame-b",
+      "bounds": {
+        "left": 766,
+        "top": 662,
+        "width": 398,
+        "height": 522
+      }
+    }
+  ]
+}

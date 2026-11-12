@@ -1,0 +1,26 @@
+weasel.png
+size: 1024, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+body
+bounds: 4, 4, 179, 225
+tail
+bounds: 187, 4, 230, 217
+head
+bounds: 421, 4, 306, 201
+sword
+bounds: 731, 4, 114, 170
+leg-near
+bounds: 849, 4, 66, 135
+leg-far
+bounds: 919, 4, 65, 134
+arm-near
+bounds: 4, 233, 84, 118
+arm-far
+bounds: 92, 233, 84, 117
+ear-near
+bounds: 180, 233, 87, 94
+ear-far
+bounds: 271, 233, 81, 93

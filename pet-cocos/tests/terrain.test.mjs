@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {terrainHeight,intersectTerrain} from '../assets/scripts/ForestTerrain.ts';
+test('central steps lift the pet gradually onto the real stone terrace',()=>{assert.equal(terrainHeight(0,1.4),0);assert.equal(terrainHeight(0,-3.5),.72);assert.equal(terrainHeight(3,-3),0);let last=0;for(let z=-1.2;z>-2.6;z-=.08){const h=terrainHeight(0,z);assert.ok(h>=last&&h-last<.121);last=h;}});
+test('perspective ground picking resolves the elevated terrace and the stairs',()=>{for(const target of [{x:0,z:-3},{x:0,z:-1.75},{x:2,z:1}]){const h=terrainHeight(target.x,target.z),origin={x:target.x,y:10,z:target.z+10},p=intersectTerrain(origin,{x:0,y:h-10,z:-10});assert.ok(p);assert.ok(Math.abs(p.z-target.z)<.02);assert.ok(Math.abs(p.y-h)<.02);}assert.equal(intersectTerrain({x:0,y:4,z:0},{x:0,y:1,z:0}),null);});

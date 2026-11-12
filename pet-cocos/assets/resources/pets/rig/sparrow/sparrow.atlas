@@ -1,0 +1,22 @@
+sparrow.png
+size: 1024, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 272, 240
+body
+bounds: 280, 4, 211, 199
+tail
+bounds: 495, 4, 230, 177
+sword
+bounds: 729, 4, 130, 170
+arm-near
+bounds: 863, 4, 87, 164
+arm-far
+bounds: 4, 248, 85, 160
+leg-far
+bounds: 93, 248, 65, 118
+leg-near
+bounds: 162, 248, 66, 99

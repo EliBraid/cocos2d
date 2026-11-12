@@ -1,0 +1,18 @@
+caster.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+body
+bounds: 2, 2, 315, 234
+top
+bounds: 319, 2, 184, 122
+face-angry
+bounds: 2, 238, 115, 69
+face-hurt
+bounds: 119, 238, 101, 61
+foot-left
+bounds: 222, 238, 64, 53
+foot-right
+bounds: 288, 238, 64, 53

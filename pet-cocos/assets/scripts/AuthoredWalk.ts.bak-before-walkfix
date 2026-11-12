@@ -1,0 +1,28 @@
+// One pose source drives the native Spine clip and its terrain adapter.
+// Units for pose channels are Spine units; travel is in world units.
+export const WALK_CYCLE={speed:.8,stride:.672,duration:.84,stance:.58,unit:3.8/640} as const;
+const wrap=(p:number)=>((p%1)+1)%1,clamp=(n:number)=>Math.max(0,Math.min(1,n));
+const ease=(t:number)=>{t=clamp(t);return t*t*(3-2*t);};
+function periodic(values:number[],p:number){const q=wrap(p)*values.length,i=Math.floor(q),t=q-i,n=values.length,a=values[(i+n-1)%n],b=values[i],c=values[(i+1)%n],d=values[(i+2)%n];return .5*(2*b+(c-a)*t+(2*a-5*b+4*c-d)*t*t+(-a+3*b-3*c+d)*t*t*t);}
+const hip=[0,-4.5,-1,4,6.5,5.5,3,1,0,-4.5,-1,4,6.5,5.5,3,1];
+const arm=[-14,-13,-10,-5,0,5,10,13,14,13,10,5,0,-5,-10,-13];
+const nod=[-.8,-1.2,-.2,.6,1,.2,-.3,-.8,-.8,-1.2,-.2,.6,1,.2,-.3,-.8];
+export function sampleWalkBody(phase:number){const p=wrap(phase),hipY=periodic(hip,p),hipR=periodic(arm,p)*.045,chestR=-1.8-periodic(arm,p)*.07;return {hipX:periodic(arm,p)*.1,hipY,hipR,chestR,headX:periodic(arm,p-.04)*.07,headY:-hipY*.38+periodic(hip,p-.055)*.22,headR:-hipR*.75-chestR*.7+periodic(nod,p),free:periodic(arm,p),fore:periodic(arm,p-.08)*.23,carry:-periodic(arm,p)*.25,carryFore:periodic(arm,p-.06)*.12,blade:periodic(arm,p-.1)*.08,tail:periodic(arm,p-.08)*.29,tailTip:periodic(arm,p-.19)*.58,tailY:(periodic(hip,p-.08)-hipY)*.45,scarf:-periodic(arm,p-.12)*.27,earL:periodic(hip,p-.045)*.38,earR:-periodic(hip,p-.07)*.3};}
+export function sampleWalkFoot(phase:number){const p=wrap(phase),stance=p<WALK_CYCLE.stance;let travel:number,lift=0,roll:number;
+ if(stance){travel=WALK_CYCLE.stride*(WALK_CYCLE.stance/2-p);roll=p<.1?8*(1-ease(p/.1)):p>.44?-18*ease((p-.44)/.14):0;}
+ else{const t=(p-.58)/.42,s=t*t*t*(10+t*(-15+6*t));travel=-WALK_CYCLE.stride*.29-WALK_CYCLE.stride*.42*t+WALK_CYCLE.stride*s;lift=Math.sin(Math.PI*t)**2*22;roll=t<.23?-18-6*ease(t/.23):t<.66?-24+16*ease((t-.23)/.43):-8+16*ease((t-.66)/.34);}
+ const a=roll*Math.PI/180,pivot=roll>=0?-20:30,rollX=pivot-(pivot*Math.cos(a)+42*Math.sin(a)),rollY=-42-(pivot*Math.sin(a)-42*Math.cos(a));
+ return {travel,lift,roll,rollX,rollY};
+}
+export function nativeWalkFoot(phase:number,restX:number,center:number,back=false){const f=sampleWalkFoot(phase),axis=back?.28:1;return {...f,dx:(center-restX)*(back?.4:.85)+f.travel/WALK_CYCLE.unit*axis+f.rollX,dy:f.lift+f.rollY};}
+type Point={x:number;z:number};
+export class AuthoredGait {
+ clock=0;stride:number=WALK_CYCLE.stride;private lastDistance=0;
+ private leftX:number;private rightX:number;
+ constructor(leftX=-32,rightX=48){this.leftX=leftX;this.rightX=rightX;}
+ reset(distance:number){this.clock=0;this.lastDistance=distance;}
+ update(position:Point,velocity:Point,right:Point,speed:number,distance:number,dt:number,back=false){const length=Math.hypot(velocity.x,velocity.z),direction=length>.001?{x:velocity.x/length,z:velocity.z/length}:{x:0,z:0},along=direction.x*right.x+direction.z*right.z,depth=1-Math.min(1,Math.abs(along)),stride=this.stride*(1-.35*depth),mix=ease(speed/WALK_CYCLE.speed),center=(this.leftX+this.rightX)*.5;this.clock+=Math.max(0,distance-this.lastDistance)/stride;this.lastDistance=distance;
+  const foot=(restX:number,shift:number)=>{const p=wrap(this.clock+shift),f=nativeWalkFoot(p,restX,center,back),side=restX*WALK_CYCLE.unit,compress=(restX-center)*WALK_CYCLE.unit*along*.85*mix,travel=f.travel*(stride/WALK_CYCLE.stride)*mix,contact={x:position.x+right.x*side-direction.x*compress+direction.x*travel,z:position.z+right.z*side-direction.z*compress+direction.z*travel},point={x:contact.x+right.x*f.rollX*WALK_CYCLE.unit*mix,z:contact.z+right.z*f.rollX*WALK_CYCLE.unit*mix};return {point,contact,stance:p<WALK_CYCLE.stance,lift:f.dy*WALK_CYCLE.unit*mix,roll:f.roll*mix,nativeDX:f.dx*mix,phase:p};};
+  return {left:foot(this.leftX,0),right:foot(this.rightX,.5),clock:this.clock,stride,depth,mix};
+ }
+}
