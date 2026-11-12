@@ -1,0 +1,26 @@
+cat.png
+size: 1024, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 274, 240
+tail
+bounds: 282, 4, 214, 207
+body
+bounds: 500, 4, 175, 200
+leg-far
+bounds: 679, 4, 65, 124
+leg-near
+bounds: 748, 4, 66, 123
+arm-near
+bounds: 818, 4, 90, 113
+arm-far
+bounds: 912, 4, 84, 112
+ear-near
+bounds: 4, 248, 95, 103
+sword
+bounds: 103, 248, 135, 102
+ear-far
+bounds: 242, 248, 87, 97

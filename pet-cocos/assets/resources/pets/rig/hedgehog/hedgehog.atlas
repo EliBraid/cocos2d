@@ -1,0 +1,26 @@
+hedgehog.png
+size: 1024, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+head
+bounds: 4, 4, 296, 240
+tail
+bounds: 304, 4, 250, 215
+body
+bounds: 558, 4, 181, 211
+sword
+bounds: 743, 4, 131, 200
+leg-far
+bounds: 878, 4, 65, 132
+leg-near
+bounds: 947, 4, 66, 130
+arm-far
+bounds: 4, 248, 89, 123
+arm-near
+bounds: 97, 248, 88, 122
+ear-near
+bounds: 189, 248, 91, 89
+ear-far
+bounds: 284, 248, 87, 87

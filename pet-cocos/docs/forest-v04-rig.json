@@ -1,0 +1,29 @@
+{
+  "bones": 28,
+  "slots": 6,
+  "skins": 2,
+  "animations": [
+    "idle",
+    "walk",
+    "start",
+    "stop",
+    "turn",
+    "attack",
+    "hit",
+    "happy",
+    "sniff",
+    "sleep",
+    "wake",
+    "face-calm",
+    "face-happy",
+    "face-focus",
+    "face-alert",
+    "face-sleep",
+    "look-left",
+    "look-right",
+    "look-center"
+  ],
+  "body": "continuous drawing, anatomy controls and weighted mesh",
+  "face": "whole-head expression attachments on a separate track",
+  "runtime": "Spine 4.2.73"
+}

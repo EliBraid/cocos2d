@@ -1,0 +1,18 @@
+{
+  "method": "内置imagegen",
+  "reference": "exec-e722538f-768a-4f10-abc0-e6ecf14cc658.png",
+  "assets": [
+    {
+      "name": "camp-background",
+      "transparent": false,
+      "prompt": "Use case: stylized-concept. Asset type: actual mobile game camp environment background, square composition.\nImage 1 is STYLE and right-hand HOME SCENE reference only. Draw the empty CAMP from the right-hand screen as a standalone full-bleed square environment illustration. NO interface, NO frame, NO text, NO labels, NO letters, NO numbers, NO characters, NO animals.\nArt direction: charming hand-inked comic/doodle on warm off-white paper, bold imperfect black contours, delicate crosshatching and sparse woodcut detail, like the provided reference, NOT a painted fantasy landscape, NOT 3D render. Predominantly ivory and black, very restrained pale sage and dusty tan accents.\nComposition: elevated three-quarter fixed top-down game view. A wooden fence and forest trees line the far back. Small egg-shaped hatchery hut in upper LEFT corner, small wooden archery range at upper RIGHT edge, anvil workshop and stacked crates along lower RIGHT edge, a few planks/crates at lower LEFT edge. Leave the broad CENTER and LOWER CENTER a spacious empty sandy plaza with subtle scattered stepping stones so animated characters can walk there. In upper-middle near x50% y30% draw a low circular ring of stone blocks with an EMPTY center, ready for a separate crystal object. Do NOT draw a crystal. No giant central tree, no buildings blocking the central walkable area. The scene should feel intimate, cosy and clearly laid out for a portrait pet-raising game. Maintain strong readable silhouettes and offwhite quiet ground. Consistent thick black ink texture, slight cream paper grain, no photorealism.",
+      "source": "C:\\Users\\111\\.codex\\generated_images\\01a16147-f153-7a13-a722-6a75b2d220dd\\exec-149b997e-c378-41c7-9c29-9ef59a6a245c.png"
+    },
+    {
+      "name": "camp-props",
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: transparent 2x2 separated sprite asset sheet for the same hand-inked game as image 1.\nExactly FOUR separate objects in FOUR equal cells, each fully contained in central 75% of its cell with large transparent gutters. NO grid lines, NO text or labels, NO UI, no complete scene.\nTop left: a small freestanding wooden training dummy on a wood base, circular ivory target with coral-red bullseye, angled three-quarter game view, black ink contours and crosshatching.\nTop right: two stacked wooden supply crates and a small barrel, warm ivory/desaturated tan, black ink outlines, matching the reference camp.\nBottom left: a tall faceted glowing CYAN crystal sitting in a few black-outlined stone blocks, selective cyan and turquoise coloring, sharp comic facets and white reflections, hand drawn not 3D, not a UI gem.\nBottom right: a single original little enemy shadow wisp, charcoal-black round teardrop body, two tiny short horns, narrowed CORAL-RED eyes, tiny wispy paws, cute but mischievous, three-quarter front view, bold simple silhouette, no weapon.\nUse thick confident imperfect black pen strokes, cream highlights, flat cel-shading, paper-comic game style consistent with reference, avoid soft painterly brushes or realistic lighting. True transparent background, no shadows beyond objects' own drawn bases, no checkerboard.",
+      "source": "C:\\Users\\111\\.codex\\generated_images\\01a16147-f153-7a13-a722-6a75b2d220dd\\exec-c1d865ae-cb13-4a0b-bf6f-4b2505a6b499.png"
+    }
+  ]
+}
